@@ -1,6 +1,12 @@
 "use client";
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
+import {
+  AREA_SERVED_SCHEMA,
+  COUNTY_ROUTE,
+  SERVICE_ROUTES,
+  absoluteUrl,
+} from "./_lib/local-seo";
 
 type Service = "Driveway" | "Siding" | "Roofing";
 
@@ -13,6 +19,7 @@ const services: Array<{
   durationMinutes: number;
   measurementLabel: string;
   measurementHelp: string;
+  href: string;
 }> = [
   {
     name: "Driveway",
@@ -23,6 +30,7 @@ const services: Array<{
     durationMinutes: 90,
     measurementLabel: "Approximate driveway area",
     measurementHelp: "Multiply the driveway length by its average width to estimate square feet.",
+    href: SERVICE_ROUTES.Driveway,
   },
   {
     name: "Siding",
@@ -33,16 +41,18 @@ const services: Array<{
     durationMinutes: 150,
     measurementLabel: "Approximate exterior wall area",
     measurementHelp: "Use your best estimate of the exterior wall area that needs washing.",
+    href: SERVICE_ROUTES.Siding,
   },
   {
     name: "Roofing",
     eyebrow: "03 / ROOFLINE",
-    title: "Roof Soft Wash",
+    title: "Roof Cleaning & Soft Wash",
     description: "Target dark streaks and organic growth with gentle, surface-safe care.",
     rate: 0.3,
     durationMinutes: 210,
     measurementLabel: "Approximate roof area",
     measurementHelp: "Use a previous property or roofing measurement. Never climb onto a roof to measure it.",
+    href: SERVICE_ROUTES.Roofing,
   },
 ];
 
@@ -131,38 +141,53 @@ const structuredData = {
       email: "pacificpurewash@gmail.com",
       logo: "https://pacificpurewash.com/pacific-pure-wash-logo.jpg",
       image: "https://pacificpurewash.com/og.jpg",
-      description: "Small, local, eco-friendly exterior cleaning business providing pressure washing and softwashing for driveways, siding, and roofing.",
+      description: "Small, local, eco-friendly exterior cleaning business providing pressure washing, power washing, softwashing, and roof cleaning throughout Jackson County, Oregon, including ZIP codes 97501 and 97530.",
+      areaServed: AREA_SERVED_SCHEMA,
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "customer service",
         email: "pacificpurewash@gmail.com",
       },
       makesOffer: [
-        { "@type": "Offer", itemOffered: { "@id": "https://pacificpurewash.com/#driveway-cleaning" } },
-        { "@type": "Offer", itemOffered: { "@id": "https://pacificpurewash.com/#house-soft-wash" } },
-        { "@type": "Offer", itemOffered: { "@id": "https://pacificpurewash.com/#roof-soft-wash" } },
+        { "@type": "Offer", itemOffered: { "@id": `${absoluteUrl(SERVICE_ROUTES.Driveway)}#service` } },
+        { "@type": "Offer", itemOffered: { "@id": `${absoluteUrl(SERVICE_ROUTES.Siding)}#service` } },
+        { "@type": "Offer", itemOffered: { "@id": `${absoluteUrl(SERVICE_ROUTES.Roofing)}#service` } },
       ],
     },
     {
       "@type": "Service",
-      "@id": "https://pacificpurewash.com/#driveway-cleaning",
-      name: "Driveway Cleaning",
-      serviceType: "Pressure washing for driveways",
+      "@id": `${absoluteUrl(SERVICE_ROUTES.Driveway)}#service`,
+      name: "Driveway Pressure Washing",
+      alternateName: "Driveway Power Washing",
+      url: absoluteUrl(SERVICE_ROUTES.Driveway),
+      serviceType: "Controlled pressure washing for driveways",
       provider: { "@id": "https://pacificpurewash.com/#business" },
+      areaServed: AREA_SERVED_SCHEMA,
     },
     {
       "@type": "Service",
-      "@id": "https://pacificpurewash.com/#house-soft-wash",
-      name: "House Soft Wash",
+      "@id": `${absoluteUrl(SERVICE_ROUTES.Siding)}#service`,
+      name: "Siding and House Softwashing",
+      url: absoluteUrl(SERVICE_ROUTES.Siding),
       serviceType: "Softwashing for siding, stucco, and painted exterior surfaces",
       provider: { "@id": "https://pacificpurewash.com/#business" },
+      areaServed: AREA_SERVED_SCHEMA,
     },
     {
       "@type": "Service",
-      "@id": "https://pacificpurewash.com/#roof-soft-wash",
-      name: "Roof Soft Wash",
-      serviceType: "Softwashing for roofing",
+      "@id": `${absoluteUrl(SERVICE_ROUTES.Roofing)}#service`,
+      name: "Roof Cleaning and Softwashing",
+      url: absoluteUrl(SERVICE_ROUTES.Roofing),
+      serviceType: "Lower-pressure roof cleaning and softwashing",
       provider: { "@id": "https://pacificpurewash.com/#business" },
+      areaServed: AREA_SERVED_SCHEMA,
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://pacificpurewash.com/#website",
+      url: "https://pacificpurewash.com/",
+      name: "Pacific Pure Wash",
+      publisher: { "@id": "https://pacificpurewash.com/#business" },
     },
   ],
 };
@@ -193,6 +218,10 @@ export default function Home() {
     const month = String(today.getMonth() + 1).padStart(2, "0");
     const day = String(today.getDate()).padStart(2, "0");
     setMinimumDate(`${year}-${month}-${day}`);
+
+    const requestedService = new URLSearchParams(window.location.search).get("service")?.toLowerCase();
+    const matchingService = services.find((item) => item.name.toLowerCase() === requestedService);
+    if (matchingService) setService(matchingService.name);
   }, []);
 
   function chooseService(next: Service) {
@@ -276,8 +305,8 @@ export default function Home() {
         </a>
         <nav aria-label="Primary navigation">
           <a href="#services">Services</a>
+          <a href={COUNTY_ROUTE}>Service area</a>
           <a href="#about">About us</a>
-          <a href="#process">Our process</a>
           <a href="#faq">FAQ</a>
           <a className="button button-dark" href="#quote" aria-label="Get an instant estimate"><span className="header-cta-long">Instant estimate</span><span className="header-cta-short" aria-hidden="true">Estimate</span></a>
         </nav>
@@ -286,9 +315,9 @@ export default function Home() {
       <section className="hero shell" id="top">
         <div className="hero-copy">
           <p className="eyebrow">Go green. Shine brighter.</p>
-          <h1>Powerful clean.<br /><em>Purely better.</em></h1>
+          <h1>Pressure washing<br /><em>across Jackson County.</em></h1>
           <p className="hero-intro">
-            Professional pressure washing and softwashing from a small local business—using surface-safe, eco-friendly care to help our community shine brighter.
+            <strong>Powerful clean. Purely better.</strong> Pacific Pure Wash provides driveway pressure washing, siding softwashing, and roof cleaning throughout Jackson County, Oregon—including 97501 and 97530.
           </p>
           <div className="hero-actions">
             <a className="button button-dark" href="#quote">Get my instant estimate <span>→</span></a>
@@ -314,7 +343,7 @@ export default function Home() {
         <p className="eyebrow">Homes, businesses & our environment</p>
         <div>
           <h2>Small company care.<br />A brighter community.</h2>
-          <p>Pacific Pure Wash is a small, local, eco-friendly exterior-cleaning business with a simple goal: help our community shine brighter. We match the method to the surface—controlled pressure for hardscape and a gentler soft wash for siding and roofing—while keeping people, property, and the surrounding environment in mind.</p>
+          <p>Pacific Pure Wash is a small, local, eco-friendly exterior-cleaning business serving Jackson County, Oregon, with a simple goal: help our community shine brighter. We match the method to the surface—controlled pressure for hardscape and a gentler soft wash for siding and roofing—while keeping people, property, and the surrounding environment in mind.</p>
         </div>
       </section>
 
@@ -333,6 +362,7 @@ export default function Home() {
               <div className={`service-icon icon-${item.name.toLowerCase()}`} aria-hidden="true"><i /><i /><i /></div>
               <h3>{item.title}</h3>
               <p>{item.description}</p>
+              <a className="service-detail-link" href={item.href}>Learn about {item.title.toLowerCase()} →</a>
               <button type="button" onClick={() => chooseService(item.name)}>
                 Quote my {item.name.toLowerCase()} <b>↗</b>
               </button>
@@ -344,11 +374,14 @@ export default function Home() {
       <section className="service-area shell" aria-labelledby="service-area-title">
         <div>
           <p className="eyebrow">Service availability</p>
-          <h2 id="service-area-title">Is your property in our service area?</h2>
+          <h2 id="service-area-title">Exterior cleaning throughout Jackson County.</h2>
         </div>
         <div>
-          <p>Pacific Pure Wash serves residential and commercial properties within its current local operating area. Enter your property ZIP code in the quote form and we’ll confirm availability for your location—without guessing or overpromising.</p>
-          <a className="text-link" href="#quote">Check my ZIP code →</a>
+          <p>Pacific Pure Wash serves residential and commercial properties throughout Jackson County, Oregon, including Medford ZIP 97501 and Jacksonville ZIP 97530. Enter your property ZIP code in the quote form and we’ll confirm the project details and availability.</p>
+          <div className="service-area-links">
+            <a className="text-link" href={COUNTY_ROUTE}>Explore our Jackson County service area →</a>
+            <a className="text-link" href="#quote">Get an estimate →</a>
+          </div>
         </div>
       </section>
 
@@ -375,9 +408,9 @@ export default function Home() {
         </div>
         <div className="faq-grid">
           <details><summary>What is the difference between pressure washing and softwashing?</summary><p>Pressure washing uses controlled water pressure for durable hard surfaces such as driveways. Softwashing uses lower pressure for surfaces that need gentler care, including siding and roofing.</p></details>
-          <details><summary>Which exterior surfaces do you clean?</summary><p>The current services are driveway cleaning, house soft washing for siding, stucco, and painted exteriors, and roof soft washing.</p></details>
+          <details><summary>Do you offer power washing or pressure washing?</summary><p>People often use both terms for hard-surface exterior cleaning. Pacific Pure Wash provides controlled pressure washing for durable driveways and uses lower-pressure softwashing for siding and roofing.</p></details>
           <details><summary>How does the instant estimate work?</summary><p>Choose driveway, siding, or roofing and enter the approximate square footage. The calculator uses the published service rate and a $175 minimum charge. The result is an estimate, not a final or binding quote.</p></details>
-          <details><summary>Do you serve residential and commercial properties?</summary><p>Yes. Pacific Pure Wash accepts quote requests for both residential and commercial exterior-cleaning projects. Availability is confirmed using the property ZIP code.</p></details>
+          <details><summary>Where do you provide exterior cleaning?</summary><p>Pacific Pure Wash serves residential and commercial properties throughout Jackson County, Oregon, including Medford ZIP 97501 and Jacksonville ZIP 97530.</p></details>
           <details><summary>When are appointments available?</summary><p>Appointment requests are available Monday through Thursday from 7:00 AM to 4:00 PM Pacific Time. The form only shows start times that allow the selected service to finish by 4:00 PM.</p></details>
           <details><summary>How long does each service take?</summary><p>A driveway appointment is estimated at 1½ hours, siding at 2½ hours, and roofing at 3½ hours. Actual time can change after the property and conditions are reviewed.</p></details>
         </div>
@@ -387,7 +420,7 @@ export default function Home() {
         <div className="quote-intro">
           <p className="eyebrow">Instant estimate & scheduling</p>
           <h2>Price it. Plan it. Request it.</h2>
-          <p>Choose a surface, enter the approximate square footage, and see an estimated price before selecting a preferred service time.</p>
+          <p>Choose a Jackson County exterior-cleaning service, enter the approximate square footage, and see an estimated price before selecting a preferred service time.</p>
           <div className="quote-note"><span>✓</span> Monday–Thursday · 7:00 AM–4:00 PM Pacific Time</div>
         </div>
         <form className="quote-form" onSubmit={submitQuote}>
@@ -476,7 +509,7 @@ export default function Home() {
             <label>Email address<input required name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label>
             <label className="full">Property street address<input required name="address" autoComplete="street-address" placeholder="Street address" /></label>
             <label>City<input required name="city" autoComplete="address-level2" placeholder="City" /></label>
-            <label className="field-state">State<input required name="state" autoComplete="address-level1" maxLength={2} placeholder="WA" /></label>
+            <label className="field-state">State<input required name="state" autoComplete="address-level1" maxLength={2} placeholder="OR" /></label>
             <label className="field-zip">Property ZIP<input required name="zip" inputMode="numeric" autoComplete="postal-code" pattern="[0-9]{5}" placeholder="00000" /></label>
             <label className="full">Tell us a little about the project<textarea name="details" rows={3} placeholder={`Approximate size, condition, or anything we should know about your ${service.toLowerCase()}…`} /></label>
             </div>
@@ -492,6 +525,12 @@ export default function Home() {
           <a className="footer-email" href="mailto:pacificpurewash@gmail.com">pacificpurewash@gmail.com</a>
           <a href="#quote">Get an instant estimate ↑</a>
         </div>
+        <nav className="shell footer-seo-links" aria-label="Services and coverage">
+          <a href={SERVICE_ROUTES.Driveway}>Driveway pressure washing</a>
+          <a href={SERVICE_ROUTES.Siding}>Siding softwashing</a>
+          <a href={SERVICE_ROUTES.Roofing}>Roof cleaning</a>
+          <a href={COUNTY_ROUTE}>Jackson County service area</a>
+        </nav>
         <div className="shell footer-bottom"><span>© {new Date().getFullYear()} Pacific Pure Wash</span><span>Go green. Shine brighter.</span></div>
       </footer>
     </main>
