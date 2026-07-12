@@ -4,8 +4,8 @@ import "./globals.css";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
-const title = "Pacific Pure Wash | Pressure Washing & Softwashing";
-const description = "Get an instant driveway, siding, or roofing cleaning estimate from Pacific Pure Wash, a small local eco-friendly exterior-cleaning business.";
+const title = "Jackson County Pressure Washing | Pacific Pure Wash";
+const description = "Driveway pressure washing, siding softwashing, and roof cleaning across Jackson County, Oregon, including 97501 and 97530. Get an instant estimate.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pacificpurewash.com"),
