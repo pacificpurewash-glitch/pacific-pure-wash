@@ -30,6 +30,53 @@ const services: Array<{
   },
 ];
 
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "LocalBusiness",
+      "@id": "https://pacificpurewash.com/#business",
+      name: "Pacific Pure Wash",
+      url: "https://pacificpurewash.com/",
+      email: "pacificpurewash@gmail.com",
+      logo: "https://pacificpurewash.com/pacific-pure-wash-logo.jpg",
+      image: "https://pacificpurewash.com/og.jpg",
+      description: "Exterior pressure washing and softwashing for driveways, siding, and roofing at residential and commercial properties.",
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer service",
+        email: "pacificpurewash@gmail.com",
+      },
+      makesOffer: [
+        { "@type": "Offer", itemOffered: { "@id": "https://pacificpurewash.com/#driveway-cleaning" } },
+        { "@type": "Offer", itemOffered: { "@id": "https://pacificpurewash.com/#house-soft-wash" } },
+        { "@type": "Offer", itemOffered: { "@id": "https://pacificpurewash.com/#roof-soft-wash" } },
+      ],
+    },
+    {
+      "@type": "Service",
+      "@id": "https://pacificpurewash.com/#driveway-cleaning",
+      name: "Driveway Cleaning",
+      serviceType: "Pressure washing for driveways",
+      provider: { "@id": "https://pacificpurewash.com/#business" },
+    },
+    {
+      "@type": "Service",
+      "@id": "https://pacificpurewash.com/#house-soft-wash",
+      name: "House Soft Wash",
+      serviceType: "Softwashing for siding, stucco, and painted exterior surfaces",
+      provider: { "@id": "https://pacificpurewash.com/#business" },
+    },
+    {
+      "@type": "Service",
+      "@id": "https://pacificpurewash.com/#roof-soft-wash",
+      name: "Roof Soft Wash",
+      serviceType: "Softwashing for roofing",
+      provider: { "@id": "https://pacificpurewash.com/#business" },
+    },
+  ],
+};
+
 export default function Home() {
   const [service, setService] = useState<Service>("Driveway");
   const [submitted, setSubmitted] = useState(false);
@@ -62,9 +109,10 @@ export default function Home() {
 
   return (
     <main>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }} />
       <header className="site-header shell">
         <a className="brand" href="#top" aria-label="Pacific Pure Wash home">
-          <img className="brand-logo" src="/pacific-pure-wash-logo.jpg" alt="" />
+          <img className="brand-logo" src="/pacific-pure-wash-logo.jpg" alt="" width="70" height="70" decoding="async" />
           <span className="brand-copy">
             <strong>Pacific Pure Wash</strong>
             <small>Pressure washing & softwashing</small>
@@ -74,6 +122,7 @@ export default function Home() {
           <a href="#services">Services</a>
           <a href="#about">About us</a>
           <a href="#process">Our process</a>
+          <a href="#faq">FAQ</a>
           <a className="button button-dark" href="#quote">Get a free quote</a>
         </nav>
       </header>
@@ -92,7 +141,7 @@ export default function Home() {
         </div>
         <div className="hero-art">
           <span className="forest-line" aria-hidden="true" />
-          <img src="/pacific-pure-wash-logo.jpg" alt="Pacific Pure Wash — pressure washing and softwashing, powerful clean, purely better" />
+          <img src="/pacific-pure-wash-logo.jpg" alt="Pacific Pure Wash logo featuring a pressure-washed building, evergreen trees, a mountain, water, and green leaves" width="640" height="640" decoding="async" fetchPriority="high" />
         </div>
       </section>
 
@@ -136,6 +185,17 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="service-area shell" aria-labelledby="service-area-title">
+        <div>
+          <p className="eyebrow">Service availability</p>
+          <h2 id="service-area-title">Is your property in our service area?</h2>
+        </div>
+        <div>
+          <p>Pacific Pure Wash serves residential and commercial properties within its current local operating area. Enter your property ZIP code in the quote form and we’ll confirm availability for your location—without guessing or overpromising.</p>
+          <a className="text-link" href="#quote">Check my ZIP code →</a>
+        </div>
+      </section>
+
       <section className="process" id="process">
         <div className="shell process-grid">
           <div>
@@ -147,6 +207,21 @@ export default function Home() {
             <li><b>02</b><span><strong>Receive your clear quote.</strong> We review the project and follow up with next steps.</span></li>
             <li><b>03</b><span><strong>Enjoy the fresh finish.</strong> We arrive ready to clean with care.</span></li>
           </ol>
+        </div>
+      </section>
+
+      <section className="faq shell" id="faq" aria-labelledby="faq-title">
+        <div className="section-heading">
+          <div>
+            <p className="eyebrow">Frequently asked questions</p>
+            <h2 id="faq-title">Helpful answers before your quote.</h2>
+          </div>
+        </div>
+        <div className="faq-grid">
+          <article><h3>What is the difference between pressure washing and softwashing?</h3><p>Pressure washing uses controlled water pressure for durable hard surfaces such as driveways. Softwashing uses lower pressure for surfaces that need gentler care, including siding and roofing.</p></article>
+          <article><h3>Which exterior surfaces do you clean?</h3><p>The current services are driveway cleaning, house soft washing for siding, stucco, and painted exteriors, and roof soft washing.</p></article>
+          <article><h3>How do I request a quote?</h3><p>Choose driveway, siding, or roofing, then provide your contact details, property ZIP code, and a short description. The form prepares an email to Pacific Pure Wash for review.</p></article>
+          <article><h3>Do you serve residential and commercial properties?</h3><p>Yes. Pacific Pure Wash accepts quote requests for both residential and commercial exterior-cleaning projects. Availability is confirmed using the property ZIP code.</p></article>
         </div>
       </section>
 
@@ -182,7 +257,7 @@ export default function Home() {
 
       <footer>
         <div className="shell footer-grid">
-          <a className="brand footer-brand" href="#top"><img className="brand-logo" src="/pacific-pure-wash-logo.jpg" alt="" /><span className="brand-copy"><strong>Pacific Pure Wash</strong><small>Pressure washing & softwashing</small></span></a>
+          <a className="brand footer-brand" href="#top"><img className="brand-logo" src="/pacific-pure-wash-logo.jpg" alt="" width="70" height="70" loading="lazy" decoding="async" /><span className="brand-copy"><strong>Pacific Pure Wash</strong><small>Pressure washing & softwashing</small></span></a>
           <a className="footer-email" href="mailto:pacificpurewash@gmail.com">pacificpurewash@gmail.com</a>
           <a href="#quote">Get a free quote ↑</a>
         </div>

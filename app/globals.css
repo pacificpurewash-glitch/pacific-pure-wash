@@ -33,4 +33,7 @@ footer{border-top:6px solid var(--leaf)}
 .footer-brand .brand-copy strong{color:#fff}
 .footer-brand .brand-copy small{color:#9bc857}
 .footer-email{color:#a8c3ce}
+.service-area{display:grid;grid-template-columns:.8fr 1.2fr;gap:90px;align-items:start;padding:0 0 120px}.service-area h2{margin:20px 0 0;color:var(--navy);font:700 clamp(38px,4vw,58px)/1.02 var(--serif);letter-spacing:-.035em}.service-area>div:last-child{padding-top:30px}.service-area p{max-width:630px;color:var(--muted);font-size:16px;line-height:1.8}.service-area .text-link{display:inline-block;margin-top:14px}.faq{padding-block:120px}.faq .section-heading{margin-bottom:50px}.faq .section-heading h2{margin-top:18px}.faq-grid{display:grid;grid-template-columns:1fr 1fr;border-top:1px solid var(--line);border-left:1px solid var(--line)}.faq article{padding:34px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(255,255,255,.68)}.faq h3{margin:0 0 14px;color:var(--navy);font:700 24px/1.2 var(--serif)}.faq p{margin:0;color:var(--muted);font-size:14px;line-height:1.75}
+@media(max-width:980px){.service-area{grid-template-columns:1fr;gap:24px;padding-bottom:90px}.service-area>div:last-child{padding-top:0}}
 @media(max-width:620px){.brand-copy strong{font-size:16px}.brand-logo{width:48px;height:48px}}
+@media(max-width:620px){.service-area h2{font-size:42px}.faq{padding-block:80px}.faq-grid{grid-template-columns:1fr}.faq article{padding:26px}.faq h3{font-size:21px}}

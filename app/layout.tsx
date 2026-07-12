@@ -1,26 +1,30 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import { headers } from "next/headers";
 import "./globals.css";
 
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
-export async function generateMetadata(): Promise<Metadata> {
-  const requestHeaders = await headers();
-  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host") ?? "localhost:3000";
-  const protocol = requestHeaders.get("x-forwarded-proto") ?? (host.includes("localhost") ? "http" : "https");
-  const origin = `${protocol}://${host}`;
-  const title = "Pacific Pure Wash | Exterior Cleaning & Soft Washing";
-  const description = "Thoughtful driveway, siding, and roof cleaning with surface-safe methods and clear quotes.";
+const title = "Pacific Pure Wash | Pressure Washing & Softwashing";
+const description = "Request exterior cleaning for driveways, siding, and roofing from Pacific Pure Wash. Surface-appropriate methods for residential and commercial properties.";
 
-  return {
+export const metadata: Metadata = {
+  metadataBase: new URL("https://pacificpurewash.com"),
+  title,
+  description,
+  alternates: { canonical: "https://pacificpurewash.com/" },
+  icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
+  robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
+  openGraph: {
     title,
     description,
-    icons: { icon: "/favicon.svg", shortcut: "/favicon.svg" },
-    openGraph: { title, description, type: "website", images: [{ url: `${origin}/og.jpg`, width: 1200, height: 630, alt: "Pacific Pure Wash — Driveways, Siding, Roofing" }] },
-    twitter: { card: "summary_large_image", title, description, images: [`${origin}/og.jpg`] },
-  };
-}
+    type: "website",
+    url: "https://pacificpurewash.com/",
+    siteName: "Pacific Pure Wash",
+    locale: "en_US",
+    images: [{ url: "/og.jpg", width: 1200, height: 630, alt: "Pacific Pure Wash pressure washing and softwashing" }],
+  },
+  twitter: { card: "summary_large_image", title, description, images: ["/og.jpg"] },
+};
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="en"><body className={geist.variable}>{children}</body></html>;
