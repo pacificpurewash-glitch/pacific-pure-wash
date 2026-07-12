@@ -5,7 +5,7 @@ import "./globals.css";
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
 const title = "Pacific Pure Wash | Pressure Washing & Softwashing";
-const description = "Request exterior cleaning for driveways, siding, and roofing from Pacific Pure Wash. Surface-appropriate methods for residential and commercial properties.";
+const description = "Get an instant exterior-cleaning estimate and request service for driveways, siding, or roofing from Pacific Pure Wash.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pacificpurewash.com"),
