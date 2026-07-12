@@ -56,9 +56,19 @@ const moneyFormatter = new Intl.NumberFormat("en-US", {
   minimumFractionDigits: 0,
   maximumFractionDigits: 2,
 });
+const rateFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+});
 
 function formatMoney(value: number) {
   return moneyFormatter.format(value);
+}
+
+function formatRate(value: number) {
+  return rateFormatter.format(value);
 }
 
 function formatDuration(minutes: number) {
@@ -227,7 +237,7 @@ export default function Home() {
       "",
       `Service: ${service}`,
       `Approximate area: ${numericSquareFeet.toLocaleString("en-US")} sq. ft.`,
-      `Rate: ${formatMoney(selectedService.rate)} per sq. ft.`,
+      `Rate: ${formatRate(selectedService.rate)} per sq. ft.`,
       `Estimated price: ${formatMoney(estimatedPrice)}`,
       `Minimum charge: ${formatMoney(minimumPrice)}${minimumApplies ? " (applied)" : ""}`,
       `Expected service time: ${formatDuration(selectedService.durationMinutes)}`,
@@ -413,7 +423,7 @@ export default function Home() {
                 />
               </label>
               <div className="rate-summary" aria-label={`${service} pricing`}>
-                <span>{formatMoney(selectedService.rate)} / sq. ft.</span>
+                <span>{formatRate(selectedService.rate)} / sq. ft.</span>
                 <span>{formatMoney(minimumPrice)} minimum</span>
                 <span>{formatDuration(selectedService.durationMinutes)}</span>
               </div>
@@ -432,7 +442,7 @@ export default function Home() {
                 <span>Estimated price</span>
                 <strong>{formatMoney(estimatedPrice)}</strong>
                 <p>
-                  {numericSquareFeet.toLocaleString("en-US")} sq. ft. × {formatMoney(selectedService.rate)}
+                  {numericSquareFeet.toLocaleString("en-US")} sq. ft. × {formatRate(selectedService.rate)}
                   {minimumApplies ? ` · ${formatMoney(minimumPrice)} minimum applied` : ""}
                 </p>
                 <small>This is an estimate based on the information you provided, not a final or binding quote. Final price may change after size, surface, condition, and access are confirmed.</small>
