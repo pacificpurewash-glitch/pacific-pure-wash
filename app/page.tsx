@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type Service = "Driveway" | "Siding" | "Roofing";
 
@@ -9,26 +9,106 @@ const services: Array<{
   eyebrow: string;
   title: string;
   description: string;
+  rate: number;
+  durationMinutes: number;
+  measurementLabel: string;
+  measurementHelp: string;
 }> = [
   {
     name: "Driveway",
     eyebrow: "01 / GROUND",
     title: "Driveway Cleaning",
     description: "Lift algae, tire marks, and weather stains for a brighter welcome home.",
+    rate: 0.45,
+    durationMinutes: 90,
+    measurementLabel: "Approximate driveway area",
+    measurementHelp: "Multiply the driveway length by its average width to estimate square feet.",
   },
   {
     name: "Siding",
     eyebrow: "02 / EXTERIOR",
     title: "House Soft Wash",
     description: "A low-pressure clean made for siding, stucco, and painted surfaces.",
+    rate: 0.3,
+    durationMinutes: 150,
+    measurementLabel: "Approximate exterior wall area",
+    measurementHelp: "Use your best estimate of the exterior wall area that needs washing.",
   },
   {
     name: "Roofing",
     eyebrow: "03 / ROOFLINE",
     title: "Roof Soft Wash",
     description: "Target dark streaks and organic growth with gentle, surface-safe care.",
+    rate: 0.3,
+    durationMinutes: 210,
+    measurementLabel: "Approximate roof area",
+    measurementHelp: "Use a previous property or roofing measurement. Never climb onto a roof to measure it.",
   },
 ];
+
+const minimumPrice = 175;
+const bookingStartMinutes = 7 * 60;
+const bookingEndMinutes = 16 * 60;
+const bookingStepMinutes = 30;
+const moneyFormatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 2,
+});
+
+function formatMoney(value: number) {
+  return moneyFormatter.format(value);
+}
+
+function formatDuration(minutes: number) {
+  const hours = Math.floor(minutes / 60);
+  const remainingMinutes = minutes % 60;
+  if (!remainingMinutes) return `${hours} ${hours === 1 ? "hour" : "hours"}`;
+  return `${hours} ${hours === 1 ? "hour" : "hours"} ${remainingMinutes} minutes`;
+}
+
+function formatClock(totalMinutes: number) {
+  const hour24 = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  const hour12 = hour24 % 12 || 12;
+  const period = hour24 < 12 ? "AM" : "PM";
+  return `${hour12}:${String(minutes).padStart(2, "0")} ${period}`;
+}
+
+function buildTimeOptions(durationMinutes: number) {
+  const options: Array<{ value: string; label: string }> = [];
+  for (
+    let start = bookingStartMinutes;
+    start + durationMinutes <= bookingEndMinutes;
+    start += bookingStepMinutes
+  ) {
+    const hour = Math.floor(start / 60);
+    const minutes = start % 60;
+    options.push({
+      value: `${String(hour).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`,
+      label: `${formatClock(start)} – ${formatClock(start + durationMinutes)}`,
+    });
+  }
+  return options;
+}
+
+function isBookingDay(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) return false;
+  const weekday = new Date(year, month - 1, day).getDay();
+  return weekday >= 1 && weekday <= 4;
+}
+
+function formatDate(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(year, month - 1, day));
+}
 
 const structuredData = {
   "@context": "https://schema.org",
@@ -79,29 +159,95 @@ const structuredData = {
 
 export default function Home() {
   const [service, setService] = useState<Service>("Driveway");
+  const [squareFeet, setSquareFeet] = useState("");
+  const [appointmentDate, setAppointmentDate] = useState("");
+  const [appointmentTime, setAppointmentTime] = useState("");
+  const [minimumDate, setMinimumDate] = useState("");
+  const [scheduleError, setScheduleError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  const selectedService = services.find((item) => item.name === service) ?? services[0];
+  const numericSquareFeet = Number(squareFeet);
+  const hasValidMeasurement = Number.isFinite(numericSquareFeet) && numericSquareFeet > 0;
+  const calculatedPrice = hasValidMeasurement ? numericSquareFeet * selectedService.rate : null;
+  const estimatedPrice = calculatedPrice === null ? null : Math.max(minimumPrice, calculatedPrice);
+  const minimumApplies = calculatedPrice !== null && calculatedPrice < minimumPrice;
+  const timeOptions = useMemo(
+    () => buildTimeOptions(selectedService.durationMinutes),
+    [selectedService.durationMinutes],
+  );
+
+  useEffect(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    setMinimumDate(`${year}-${month}-${day}`);
+  }, []);
 
   function chooseService(next: Service) {
     setService(next);
+    setSquareFeet("");
+    setAppointmentTime("");
+    setScheduleError("");
     setSubmitted(false);
     document.getElementById("quote")?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  function updateAppointmentDate(value: string) {
+    setAppointmentDate(value);
+    setSubmitted(false);
+    if (value && minimumDate && value < minimumDate) {
+      setScheduleError("Please choose a future appointment date.");
+    } else if (value && !isBookingDay(value)) {
+      setScheduleError("Appointments are available Monday through Thursday.");
+    } else {
+      setScheduleError("");
+    }
+  }
+
   function submitQuote(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!hasValidMeasurement || estimatedPrice === null) return;
+    if ((minimumDate && appointmentDate < minimumDate) || !isBookingDay(appointmentDate)) {
+      setScheduleError("Please choose a future Monday-through-Thursday appointment.");
+      return;
+    }
+
     const data = new FormData(event.currentTarget);
-    const subject = `${service} quote request — ${String(data.get("name") ?? "New customer")}`;
+    const selectedTime = timeOptions.find((option) => option.value === appointmentTime);
+    if (!selectedTime) {
+      setScheduleError("Please choose an available appointment time.");
+      return;
+    }
+
+    const subject = `${service} estimate and appointment request — ${String(data.get("name") ?? "New customer")}`;
     const body = [
-      "New Pacific Pure Wash quote request",
+      "New Pacific Pure Wash estimate and appointment request",
       "",
       `Service: ${service}`,
+      `Approximate area: ${numericSquareFeet.toLocaleString("en-US")} sq. ft.`,
+      `Rate: ${formatMoney(selectedService.rate)} per sq. ft.`,
+      `Estimated price: ${formatMoney(estimatedPrice)}`,
+      `Minimum charge: ${formatMoney(minimumPrice)}${minimumApplies ? " (applied)" : ""}`,
+      `Expected service time: ${formatDuration(selectedService.durationMinutes)}`,
+      "",
+      `Requested date: ${formatDate(appointmentDate)}`,
+      `Requested time: ${selectedTime.label} Pacific Time`,
+      "This requested appointment is pending confirmation.",
+      "",
       `Name: ${String(data.get("name") ?? "")}`,
       `Phone: ${String(data.get("phone") ?? "")}`,
       `Email: ${String(data.get("email") ?? "")}`,
-      `Property ZIP: ${String(data.get("zip") ?? "")}`,
+      `Property address: ${String(data.get("address") ?? "")}`,
+      `City: ${String(data.get("city") ?? "")}`,
+      `State: ${String(data.get("state") ?? "")}`,
+      `ZIP: ${String(data.get("zip") ?? "")}`,
       "",
       "Project details:",
       String(data.get("details") ?? "No additional details provided."),
+      "",
+      "Estimate notice: This estimate is based on customer-provided measurements and is not a final or binding quote. Final price and service availability may change after the property size, surface, condition, and access are reviewed.",
     ].join("\n");
     setSubmitted(true);
     window.location.href = `mailto:pacificpurewash@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -123,7 +269,7 @@ export default function Home() {
           <a href="#about">About us</a>
           <a href="#process">Our process</a>
           <a href="#faq">FAQ</a>
-          <a className="button button-dark" href="#quote">Get a free quote</a>
+          <a className="button button-dark" href="#quote">Instant estimate</a>
         </nav>
       </header>
 
@@ -135,7 +281,7 @@ export default function Home() {
             Professional pressure washing and softwashing for homes and businesses—combining surface-safe care with a fresh Pacific Northwest spirit.
           </p>
           <div className="hero-actions">
-            <a className="button button-dark" href="#quote">Start my free quote <span>→</span></a>
+            <a className="button button-dark" href="#quote">Get my instant estimate <span>→</span></a>
             <a className="text-link" href="#services">Explore our services</a>
           </div>
         </div>
@@ -168,7 +314,7 @@ export default function Home() {
             <p className="eyebrow">Choose your surface</p>
             <h2>Care tailored to every surface.</h2>
           </div>
-          <p>Select a service to begin your free quote.</p>
+          <p>Select a service to calculate an estimate and choose a preferred appointment.</p>
         </div>
         <div className="service-grid">
           {services.map((item) => (
@@ -203,9 +349,9 @@ export default function Home() {
             <h2>A cleaner home in three easy steps.</h2>
           </div>
           <ol>
-            <li><b>01</b><span><strong>Tell us what needs care.</strong> Choose your surface and share a few details.</span></li>
-            <li><b>02</b><span><strong>Receive your clear quote.</strong> We review the project and follow up with next steps.</span></li>
-            <li><b>03</b><span><strong>Enjoy the fresh finish.</strong> We arrive ready to clean with care.</span></li>
+            <li><b>01</b><span><strong>Choose and measure.</strong> Select your surface and enter its approximate square footage.</span></li>
+            <li><b>02</b><span><strong>See your instant estimate.</strong> The calculator applies the service rate and $175 minimum.</span></li>
+            <li><b>03</b><span><strong>Request a convenient time.</strong> Choose a Monday-through-Thursday opening that fits the service.</span></li>
           </ol>
         </div>
       </section>
@@ -220,38 +366,113 @@ export default function Home() {
         <div className="faq-grid">
           <article><h3>What is the difference between pressure washing and softwashing?</h3><p>Pressure washing uses controlled water pressure for durable hard surfaces such as driveways. Softwashing uses lower pressure for surfaces that need gentler care, including siding and roofing.</p></article>
           <article><h3>Which exterior surfaces do you clean?</h3><p>The current services are driveway cleaning, house soft washing for siding, stucco, and painted exteriors, and roof soft washing.</p></article>
-          <article><h3>How do I request a quote?</h3><p>Choose driveway, siding, or roofing, then provide your contact details, property ZIP code, and a short description. The form prepares an email to Pacific Pure Wash for review.</p></article>
+          <article><h3>How does the instant estimate work?</h3><p>Choose driveway, siding, or roofing and enter the approximate square footage. The calculator uses the published service rate and a $175 minimum charge. The result is an estimate, not a final or binding quote.</p></article>
           <article><h3>Do you serve residential and commercial properties?</h3><p>Yes. Pacific Pure Wash accepts quote requests for both residential and commercial exterior-cleaning projects. Availability is confirmed using the property ZIP code.</p></article>
+          <article><h3>When are appointments available?</h3><p>Appointment requests are available Monday through Thursday from 7:00 AM to 4:00 PM Pacific Time. The form only shows start times that allow the selected service to finish by 4:00 PM.</p></article>
+          <article><h3>How long does each service take?</h3><p>A driveway appointment is estimated at 1½ hours, siding at 2½ hours, and roofing at 3½ hours. Actual time can change after the property and conditions are reviewed.</p></article>
         </div>
       </section>
 
       <section className="quote-section shell" id="quote">
         <div className="quote-intro">
-          <p className="eyebrow">Free quote request</p>
-          <h2>What can we refresh?</h2>
-          <p>Choose a surface and tell us how to reach you. We’ll review the details and follow up with your personalized quote.</p>
-          <div className="quote-note"><span>✓</span> No pressure. No obligation. Just a clear next step.</div>
+          <p className="eyebrow">Instant estimate & scheduling</p>
+          <h2>Price it. Plan it. Request it.</h2>
+          <p>Choose a surface, enter the approximate square footage, and see an estimated price before selecting a preferred service time.</p>
+          <div className="quote-note"><span>✓</span> Monday–Thursday · 7:00 AM–4:00 PM Pacific Time</div>
         </div>
         <form className="quote-form" onSubmit={submitQuote}>
           <fieldset>
             <legend>1. Choose a surface</legend>
             <div className="service-options">
               {services.map((item) => (
-                <button className={service === item.name ? "active" : ""} key={item.name} type="button" onClick={() => { setService(item.name); setSubmitted(false); }}>
+                <button className={service === item.name ? "active" : ""} key={item.name} type="button" onClick={() => { setService(item.name); setSquareFeet(""); setAppointmentTime(""); setScheduleError(""); setSubmitted(false); }}>
                   <span>{item.name}</span><small>{item.title}</small>
                 </button>
               ))}
             </div>
           </fieldset>
-          <div className="form-grid">
+
+          <fieldset>
+            <legend>2. Enter the approximate size</legend>
+            <div className="measurement-grid">
+              <label htmlFor="square-feet">
+                {selectedService.measurementLabel} in square feet
+                <input
+                  id="square-feet"
+                  required
+                  name="squareFeet"
+                  type="number"
+                  inputMode="decimal"
+                  min="1"
+                  max="100000"
+                  step="1"
+                  value={squareFeet}
+                  onChange={(event) => { setSquareFeet(event.target.value); setSubmitted(false); }}
+                  aria-describedby="measurement-help"
+                  placeholder="Example: 800"
+                />
+              </label>
+              <div className="rate-summary" aria-label={`${service} pricing`}>
+                <span>{formatMoney(selectedService.rate)} / sq. ft.</span>
+                <span>{formatMoney(minimumPrice)} minimum</span>
+                <span>{formatDuration(selectedService.durationMinutes)}</span>
+              </div>
+            </div>
+            <p className="field-help" id="measurement-help">{selectedService.measurementHelp}</p>
+          </fieldset>
+
+          <div className={`estimate-card${estimatedPrice === null ? " waiting" : ""}`} aria-live="polite">
+            {estimatedPrice === null ? (
+              <>
+                <span>Your estimate will appear here</span>
+                <p>Enter the approximate square footage above.</p>
+              </>
+            ) : (
+              <>
+                <span>Estimated price</span>
+                <strong>{formatMoney(estimatedPrice)}</strong>
+                <p>
+                  {numericSquareFeet.toLocaleString("en-US")} sq. ft. × {formatMoney(selectedService.rate)}
+                  {minimumApplies ? ` · ${formatMoney(minimumPrice)} minimum applied` : ""}
+                </p>
+                <small>This is an estimate based on the information you provided, not a final or binding quote. Final price may change after size, surface, condition, and access are confirmed.</small>
+              </>
+            )}
+          </div>
+
+          <fieldset className="schedule-fields">
+            <legend>3. Choose a preferred appointment</legend>
+            <p className="schedule-summary">{service} service time: <strong>{formatDuration(selectedService.durationMinutes)}</strong>. Available start times automatically keep the full visit within working hours.</p>
+            <div className="form-grid">
+              <label>Preferred date
+                <input required name="appointmentDate" type="date" min={minimumDate} value={appointmentDate} onChange={(event) => updateAppointmentDate(event.target.value)} />
+              </label>
+              <label>Preferred time
+                <select required name="appointmentTime" value={appointmentTime} onChange={(event) => { setAppointmentTime(event.target.value); setSubmitted(false); }}>
+                  <option value="">Choose a time</option>
+                  {timeOptions.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}
+                </select>
+              </label>
+            </div>
+            {scheduleError && <p className="form-error" role="alert">{scheduleError}</p>}
+            <p className="field-help">Appointment requests are pending until Pacific Pure Wash confirms the address, project details, and availability.</p>
+          </fieldset>
+
+          <fieldset className="contact-fields">
+            <legend>4. Tell us where to go and how to reach you</legend>
+            <div className="form-grid">
             <label>Full name<input required name="name" autoComplete="name" placeholder="Your name" /></label>
             <label>Phone number<input required name="phone" type="tel" autoComplete="tel" placeholder="(555) 000-0000" /></label>
             <label>Email address<input required name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label>
+            <label className="full">Property street address<input required name="address" autoComplete="street-address" placeholder="Street address" /></label>
+            <label>City<input required name="city" autoComplete="address-level2" placeholder="City" /></label>
+            <label>State<input required name="state" autoComplete="address-level1" maxLength={2} placeholder="WA" /></label>
             <label>Property ZIP<input required name="zip" inputMode="numeric" autoComplete="postal-code" pattern="[0-9]{5}" placeholder="00000" /></label>
             <label className="full">Tell us a little about the project<textarea name="details" rows={3} placeholder={`Approximate size, condition, or anything we should know about your ${service.toLowerCase()}…`} /></label>
-          </div>
-          <button className="button button-mint submit-button" type="submit">Request my {service.toLowerCase()} quote <span>→</span></button>
-          {submitted && <p className="success" role="status">Your quote request is ready. Please send the prepared email to complete your request.</p>}
+            </div>
+          </fieldset>
+          <button className="button button-mint submit-button" type="submit">Send estimate & request time <span>→</span></button>
+          {submitted && <p className="success" role="status">Your estimate and appointment request are ready. Please send the prepared email to complete your request.</p>}
         </form>
       </section>
 
@@ -259,7 +480,7 @@ export default function Home() {
         <div className="shell footer-grid">
           <a className="brand footer-brand" href="#top"><img className="brand-logo" src="/pacific-pure-wash-logo.jpg" alt="" width="70" height="70" loading="lazy" decoding="async" /><span className="brand-copy"><strong>Pacific Pure Wash</strong><small>Pressure washing & softwashing</small></span></a>
           <a className="footer-email" href="mailto:pacificpurewash@gmail.com">pacificpurewash@gmail.com</a>
-          <a href="#quote">Get a free quote ↑</a>
+          <a href="#quote">Get an instant estimate ↑</a>
         </div>
         <div className="shell footer-bottom"><span>© {new Date().getFullYear()} Pacific Pure Wash</span><span>Powerful clean. Purely better.</span></div>
       </footer>
