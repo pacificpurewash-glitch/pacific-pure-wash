@@ -5,7 +5,6 @@ import {
   BUSINESS_ID,
   COUNTY_ROUTE,
   SERVICE_ROUTES,
-  SITE_URL,
   absoluteUrl,
   breadcrumbSchema,
 } from "../../_lib/local-seo";
