@@ -131,7 +131,7 @@ const structuredData = {
       email: "pacificpurewash@gmail.com",
       logo: "https://pacificpurewash.com/pacific-pure-wash-logo.jpg",
       image: "https://pacificpurewash.com/og.jpg",
-      description: "Exterior pressure washing and softwashing for driveways, siding, and roofing at residential and commercial properties.",
+      description: "Small, local, eco-friendly exterior cleaning business providing pressure washing and softwashing for driveways, siding, and roofing.",
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "customer service",
@@ -279,16 +279,16 @@ export default function Home() {
           <a href="#about">About us</a>
           <a href="#process">Our process</a>
           <a href="#faq">FAQ</a>
-          <a className="button button-dark" href="#quote">Instant estimate</a>
+          <a className="button button-dark" href="#quote" aria-label="Get an instant estimate"><span className="header-cta-long">Instant estimate</span><span className="header-cta-short" aria-hidden="true">Estimate</span></a>
         </nav>
       </header>
 
       <section className="hero shell" id="top">
         <div className="hero-copy">
-          <p className="eyebrow">Eco-conscious exterior cleaning</p>
+          <p className="eyebrow">Go green. Shine brighter.</p>
           <h1>Powerful clean.<br /><em>Purely better.</em></h1>
           <p className="hero-intro">
-            Professional pressure washing and softwashing for homes and businesses—combining surface-safe care with a fresh Pacific Northwest spirit.
+            Professional pressure washing and softwashing from a small local business—using surface-safe, eco-friendly care to help our community shine brighter.
           </p>
           <div className="hero-actions">
             <a className="button button-dark" href="#quote">Get my instant estimate <span>→</span></a>
@@ -303,9 +303,9 @@ export default function Home() {
 
       <section className="trust-strip" aria-label="Why homeowners choose us">
         <div className="shell trust-grid">
-          <p>Pure results, thoughtful care</p>
-          <span><b>01</b> Eco-conscious approach</span>
-          <span><b>02</b> Residential & commercial</span>
+          <p>Community-focused care</p>
+          <span><b>01</b> Local small business</span>
+          <span><b>02</b> Eco-friendly approach</span>
           <span><b>03</b> Surface-safe methods</span>
         </div>
       </section>
@@ -313,8 +313,8 @@ export default function Home() {
       <section className="about shell" id="about">
         <p className="eyebrow">Homes, businesses & our environment</p>
         <div>
-          <h2>Small company care.<br />Professional results.</h2>
-          <p>Pacific Pure Wash is a local exterior-cleaning company built around doing the job thoughtfully. We match the method to the surface—controlled pressure for hardscape and a gentler soft wash for siding and roofing—while keeping people, property, and the surrounding environment in mind.</p>
+          <h2>Small company care.<br />A brighter community.</h2>
+          <p>Pacific Pure Wash is a small, local, eco-friendly exterior-cleaning business with a simple goal: help our community shine brighter. We match the method to the surface—controlled pressure for hardscape and a gentler soft wash for siding and roofing—while keeping people, property, and the surrounding environment in mind.</p>
         </div>
       </section>
 
@@ -374,12 +374,12 @@ export default function Home() {
           </div>
         </div>
         <div className="faq-grid">
-          <article><h3>What is the difference between pressure washing and softwashing?</h3><p>Pressure washing uses controlled water pressure for durable hard surfaces such as driveways. Softwashing uses lower pressure for surfaces that need gentler care, including siding and roofing.</p></article>
-          <article><h3>Which exterior surfaces do you clean?</h3><p>The current services are driveway cleaning, house soft washing for siding, stucco, and painted exteriors, and roof soft washing.</p></article>
-          <article><h3>How does the instant estimate work?</h3><p>Choose driveway, siding, or roofing and enter the approximate square footage. The calculator uses the published service rate and a $175 minimum charge. The result is an estimate, not a final or binding quote.</p></article>
-          <article><h3>Do you serve residential and commercial properties?</h3><p>Yes. Pacific Pure Wash accepts quote requests for both residential and commercial exterior-cleaning projects. Availability is confirmed using the property ZIP code.</p></article>
-          <article><h3>When are appointments available?</h3><p>Appointment requests are available Monday through Thursday from 7:00 AM to 4:00 PM Pacific Time. The form only shows start times that allow the selected service to finish by 4:00 PM.</p></article>
-          <article><h3>How long does each service take?</h3><p>A driveway appointment is estimated at 1½ hours, siding at 2½ hours, and roofing at 3½ hours. Actual time can change after the property and conditions are reviewed.</p></article>
+          <details><summary>What is the difference between pressure washing and softwashing?</summary><p>Pressure washing uses controlled water pressure for durable hard surfaces such as driveways. Softwashing uses lower pressure for surfaces that need gentler care, including siding and roofing.</p></details>
+          <details><summary>Which exterior surfaces do you clean?</summary><p>The current services are driveway cleaning, house soft washing for siding, stucco, and painted exteriors, and roof soft washing.</p></details>
+          <details><summary>How does the instant estimate work?</summary><p>Choose driveway, siding, or roofing and enter the approximate square footage. The calculator uses the published service rate and a $175 minimum charge. The result is an estimate, not a final or binding quote.</p></details>
+          <details><summary>Do you serve residential and commercial properties?</summary><p>Yes. Pacific Pure Wash accepts quote requests for both residential and commercial exterior-cleaning projects. Availability is confirmed using the property ZIP code.</p></details>
+          <details><summary>When are appointments available?</summary><p>Appointment requests are available Monday through Thursday from 7:00 AM to 4:00 PM Pacific Time. The form only shows start times that allow the selected service to finish by 4:00 PM.</p></details>
+          <details><summary>How long does each service take?</summary><p>A driveway appointment is estimated at 1½ hours, siding at 2½ hours, and roofing at 3½ hours. Actual time can change after the property and conditions are reviewed.</p></details>
         </div>
       </section>
 
@@ -395,7 +395,7 @@ export default function Home() {
             <legend>1. Choose a surface</legend>
             <div className="service-options">
               {services.map((item) => (
-                <button className={service === item.name ? "active" : ""} key={item.name} type="button" onClick={() => { setService(item.name); setSquareFeet(""); setAppointmentTime(""); setScheduleError(""); setSubmitted(false); }}>
+                <button className={service === item.name ? "active" : ""} key={item.name} type="button" aria-pressed={service === item.name} onClick={() => { setService(item.name); setSquareFeet(""); setAppointmentTime(""); setScheduleError(""); setSubmitted(false); }}>
                   <span>{item.name}</span><small>{item.title}</small>
                 </button>
               ))}
@@ -412,7 +412,7 @@ export default function Home() {
                   required
                   name="squareFeet"
                   type="number"
-                  inputMode="decimal"
+                  inputMode="numeric"
                   min="1"
                   max="100000"
                   step="1"
@@ -452,20 +452,20 @@ export default function Home() {
 
           <fieldset className="schedule-fields">
             <legend>3. Choose a preferred appointment</legend>
-            <p className="schedule-summary">{service} service time: <strong>{formatDuration(selectedService.durationMinutes)}</strong>. Available start times automatically keep the full visit within working hours.</p>
+            <p className="schedule-summary" id="schedule-summary">{service} service time: <strong>{formatDuration(selectedService.durationMinutes)}</strong>. Available start times automatically keep the full visit within working hours.</p>
             <div className="form-grid">
-              <label>Preferred date
-                <input required name="appointmentDate" type="date" min={minimumDate} value={appointmentDate} onChange={(event) => updateAppointmentDate(event.target.value)} />
+              <label htmlFor="appointment-date">Preferred date
+                <input id="appointment-date" required name="appointmentDate" type="date" min={minimumDate} value={appointmentDate} aria-invalid={Boolean(scheduleError)} aria-describedby={`schedule-summary schedule-help${scheduleError ? " schedule-error" : ""}`} onChange={(event) => updateAppointmentDate(event.target.value)} />
               </label>
-              <label>Preferred time
-                <select required name="appointmentTime" value={appointmentTime} onChange={(event) => { setAppointmentTime(event.target.value); setSubmitted(false); }}>
+              <label htmlFor="appointment-time">Preferred time
+                <select id="appointment-time" required name="appointmentTime" value={appointmentTime} aria-invalid={scheduleError.includes("time")} aria-describedby={`schedule-summary schedule-help${scheduleError ? " schedule-error" : ""}`} onChange={(event) => { setAppointmentTime(event.target.value); setScheduleError(""); setSubmitted(false); }}>
                   <option value="">Choose a time</option>
                   {timeOptions.map((option) => <option value={option.value} key={option.value}>{option.label}</option>)}
                 </select>
               </label>
             </div>
-            {scheduleError && <p className="form-error" role="alert">{scheduleError}</p>}
-            <p className="field-help">Appointment requests are pending until Pacific Pure Wash confirms the address, project details, and availability.</p>
+            {scheduleError && <p className="form-error" id="schedule-error" role="alert">{scheduleError}</p>}
+            <p className="field-help" id="schedule-help">Appointment requests are pending until Pacific Pure Wash confirms the address, project details, and availability.</p>
           </fieldset>
 
           <fieldset className="contact-fields">
@@ -476,8 +476,8 @@ export default function Home() {
             <label>Email address<input required name="email" type="email" autoComplete="email" placeholder="you@example.com" /></label>
             <label className="full">Property street address<input required name="address" autoComplete="street-address" placeholder="Street address" /></label>
             <label>City<input required name="city" autoComplete="address-level2" placeholder="City" /></label>
-            <label>State<input required name="state" autoComplete="address-level1" maxLength={2} placeholder="WA" /></label>
-            <label>Property ZIP<input required name="zip" inputMode="numeric" autoComplete="postal-code" pattern="[0-9]{5}" placeholder="00000" /></label>
+            <label className="field-state">State<input required name="state" autoComplete="address-level1" maxLength={2} placeholder="WA" /></label>
+            <label className="field-zip">Property ZIP<input required name="zip" inputMode="numeric" autoComplete="postal-code" pattern="[0-9]{5}" placeholder="00000" /></label>
             <label className="full">Tell us a little about the project<textarea name="details" rows={3} placeholder={`Approximate size, condition, or anything we should know about your ${service.toLowerCase()}…`} /></label>
             </div>
           </fieldset>
@@ -492,7 +492,7 @@ export default function Home() {
           <a className="footer-email" href="mailto:pacificpurewash@gmail.com">pacificpurewash@gmail.com</a>
           <a href="#quote">Get an instant estimate ↑</a>
         </div>
-        <div className="shell footer-bottom"><span>© {new Date().getFullYear()} Pacific Pure Wash</span><span>Powerful clean. Purely better.</span></div>
+        <div className="shell footer-bottom"><span>© {new Date().getFullYear()} Pacific Pure Wash</span><span>Go green. Shine brighter.</span></div>
       </footer>
     </main>
   );
