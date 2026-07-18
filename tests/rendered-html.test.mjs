@@ -23,7 +23,7 @@ async function render(pathname = "/") {
   );
 }
 
-test("home page publishes Jackson County search signals", async () => {
+test("home page publishes Jackson County, Ashland, and Rogue River search signals", async () => {
   const response = await render("/");
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
@@ -33,6 +33,11 @@ test("home page publishes Jackson County search signals", async () => {
   assert.match(html, /Pressure washing[\s\S]*across Jackson County/i);
   assert.match(html, /97501/);
   assert.match(html, /97530/);
+  assert.match(html, /all of Ashland/i);
+  assert.match(html, /Rogue River/i);
+  assert.match(html, /541-690-8385/);
+  assert.match(html, /href=["']tel:\+15416908385["']/i);
+  assert.match(html, /"telephone":"\+15416908385"/i);
   assert.match(html, /service-area\/jackson-county-or/);
   assert.match(html, /services\/driveway-cleaning/);
   assert.match(html, /"areaServed"/);
@@ -70,9 +75,21 @@ for (const page of landingPages) {
     assert.match(html, new RegExp(page.heading.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i"));
     assert.match(html, /97501/);
     assert.match(html, /97530/);
+    assert.match(html, /Ashland/i);
+    assert.match(html, /Rogue River/i);
     assert.match(html, /application\/ld\+json/i);
   });
 }
+
+test("Jackson County coverage explicitly includes all of Ashland and Rogue River", async () => {
+  const response = await render("/service-area/jackson-county-or");
+  const html = await response.text();
+
+  assert.match(html, /all of Ashland/i);
+  assert.match(html, /Rogue River/i);
+  assert.match(html, /"addressLocality":"Ashland"/i);
+  assert.match(html, /"addressLocality":"Rogue River"/i);
+});
 
 test("sitemap includes the home, service, and county URLs", async () => {
   const response = await render("/sitemap.xml");
