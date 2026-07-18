@@ -7,8 +7,10 @@ import {
   SERVICE_ROUTES,
   absoluteUrl,
 } from "./_lib/local-seo";
+import { MINIMUM_PRICE, QUOTE_PRICING } from "./_lib/pricing";
 
 type Service = "Driveway" | "Siding" | "Roofing";
+type EstimateMethod = "measurement" | "photos";
 
 const services: Array<{
   name: Service;
@@ -25,8 +27,8 @@ const services: Array<{
     name: "Driveway",
     eyebrow: "01 / GROUND",
     title: "Driveway Cleaning",
-    description: "Lift algae, tire marks, and weather stains for a brighter welcome home.",
-    rate: 0.45,
+    description: "Clean concrete or asphalt driveways for a brighter welcome home.",
+    rate: QUOTE_PRICING.Driveway.rate,
     durationMinutes: 90,
     measurementLabel: "Approximate driveway area",
     measurementHelp: "Multiply the driveway length by its average width to estimate square feet.",
@@ -37,7 +39,7 @@ const services: Array<{
     eyebrow: "02 / EXTERIOR",
     title: "House Soft Wash",
     description: "A low-pressure clean made for siding, stucco, and painted surfaces.",
-    rate: 0.3,
+    rate: QUOTE_PRICING.Siding.rate,
     durationMinutes: 150,
     measurementLabel: "Approximate exterior wall area",
     measurementHelp: "Use your best estimate of the exterior wall area that needs washing.",
@@ -48,7 +50,7 @@ const services: Array<{
     eyebrow: "03 / ROOFLINE",
     title: "Roof Cleaning & Soft Wash",
     description: "Target dark streaks and organic growth with gentle, surface-safe care.",
-    rate: 0.3,
+    rate: QUOTE_PRICING.Roofing.rate,
     durationMinutes: 210,
     measurementLabel: "Approximate roof area",
     measurementHelp: "Use a previous property or roofing measurement. Never climb onto a roof to measure it.",
@@ -56,7 +58,8 @@ const services: Array<{
   },
 ];
 
-const minimumPrice = 175;
+const minimumPrice = MINIMUM_PRICE;
+const maximumPhotoCount = 4;
 const bookingStartMinutes = 7 * 60;
 const bookingEndMinutes = 16 * 60;
 const bookingStepMinutes = 30;
@@ -194,7 +197,10 @@ const structuredData = {
 
 export default function Home() {
   const [service, setService] = useState<Service>("Driveway");
+  const [estimateMethod, setEstimateMethod] = useState<EstimateMethod>("measurement");
   const [squareFeet, setSquareFeet] = useState("");
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [photoError, setPhotoError] = useState("");
   const [appointmentDate, setAppointmentDate] = useState("");
   const [appointmentTime, setAppointmentTime] = useState("");
   const [minimumDate, setMinimumDate] = useState("");
@@ -204,12 +210,18 @@ export default function Home() {
   const selectedService = services.find((item) => item.name === service) ?? services[0];
   const numericSquareFeet = Number(squareFeet);
   const hasValidMeasurement = Number.isFinite(numericSquareFeet) && numericSquareFeet > 0;
-  const calculatedPrice = hasValidMeasurement ? numericSquareFeet * selectedService.rate : null;
+  const calculatedPrice = estimateMethod === "measurement" && hasValidMeasurement
+    ? numericSquareFeet * selectedService.rate
+    : null;
   const estimatedPrice = calculatedPrice === null ? null : Math.max(minimumPrice, calculatedPrice);
   const minimumApplies = calculatedPrice !== null && calculatedPrice < minimumPrice;
   const timeOptions = useMemo(
     () => buildTimeOptions(selectedService.durationMinutes),
     [selectedService.durationMinutes],
+  );
+  const photoPreviewUrls = useMemo(
+    () => photos.map((photo) => URL.createObjectURL(photo)),
+    [photos],
   );
 
   useEffect(() => {
@@ -224,13 +236,54 @@ export default function Home() {
     if (matchingService) setService(matchingService.name);
   }, []);
 
-  function chooseService(next: Service) {
+  useEffect(
+    () => () => photoPreviewUrls.forEach((url) => URL.revokeObjectURL(url)),
+    [photoPreviewUrls],
+  );
+
+  function chooseService(next: Service, scrollToQuote = true) {
     setService(next);
     setSquareFeet("");
+    setPhotos([]);
+    setPhotoError("");
     setAppointmentTime("");
     setScheduleError("");
     setSubmitted(false);
-    document.getElementById("quote")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (scrollToQuote) {
+      document.getElementById("quote")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  function chooseEstimateMethod(next: EstimateMethod) {
+    setEstimateMethod(next);
+    setSquareFeet("");
+    setPhotos([]);
+    setPhotoError("");
+    setSubmitted(false);
+  }
+
+  function addPhotos(fileList: FileList | null) {
+    const incoming = Array.from(fileList ?? []).filter((file) => file.type.startsWith("image/"));
+    if (!incoming.length) {
+      setPhotoError("Please choose a photo from your camera or photo library.");
+      return;
+    }
+
+    const availableSlots = maximumPhotoCount - photos.length;
+    if (availableSlots <= 0) {
+      setPhotoError(`You can add up to ${maximumPhotoCount} photos.`);
+      return;
+    }
+
+    setPhotos([...photos, ...incoming.slice(0, availableSlots)]);
+    setPhotoError(incoming.length > availableSlots ? `Only the first ${maximumPhotoCount} photos were kept.` : "");
+    setSubmitted(false);
+  }
+
+  function removePhoto(index: number) {
+    setPhotos((current) => current.filter((_, photoIndex) => photoIndex !== index));
+    setPhotoError("");
+    setSubmitted(false);
   }
 
   function updateAppointmentDate(value: string) {
@@ -247,7 +300,11 @@ export default function Home() {
 
   function submitQuote(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!hasValidMeasurement || estimatedPrice === null) return;
+    if (estimateMethod === "measurement" && (!hasValidMeasurement || estimatedPrice === null)) return;
+    if (estimateMethod === "photos" && photos.length === 0) {
+      setPhotoError("Please take or choose at least one project photo.");
+      return;
+    }
     if ((minimumDate && appointmentDate < minimumDate) || !isBookingDay(appointmentDate)) {
       setScheduleError("Please choose a future Monday-through-Thursday appointment.");
       return;
@@ -260,15 +317,28 @@ export default function Home() {
       return;
     }
 
-    const subject = `${service} estimate and appointment request — ${String(data.get("name") ?? "New customer")}`;
+    const estimateDetails = estimateMethod === "measurement"
+      ? [
+          "Estimate method: Customer-provided square footage",
+          `Approximate area: ${numericSquareFeet.toLocaleString("en-US")} sq. ft.`,
+          `Rate: ${formatRate(selectedService.rate)} per sq. ft.`,
+          `Estimated price: ${formatMoney(estimatedPrice ?? minimumPrice)}`,
+          `Minimum charge: ${formatMoney(minimumPrice)}${minimumApplies ? " (applied)" : ""}`,
+        ]
+      : [
+          "Estimate method: Photo-assisted rough estimate request",
+          "Approximate area: Not supplied — photo review requested",
+          `Published rate: ${formatRate(selectedService.rate)} per sq. ft.`,
+          `Minimum charge: ${formatMoney(minimumPrice)}`,
+          `Selected photos: ${photos.length} (${photos.map((photo) => photo.name).join(", ")})`,
+          "No price was calculated from images alone. Please review the attached photos and project details before providing a rough estimate.",
+        ];
+    const subject = `${service} ${estimateMethod === "photos" ? "photo estimate" : "estimate"} and appointment request — ${String(data.get("name") ?? "New customer")}`;
     const body = [
       "New Pacific Pure Wash estimate and appointment request",
       "",
       `Service: ${service}`,
-      `Approximate area: ${numericSquareFeet.toLocaleString("en-US")} sq. ft.`,
-      `Rate: ${formatRate(selectedService.rate)} per sq. ft.`,
-      `Estimated price: ${formatMoney(estimatedPrice)}`,
-      `Minimum charge: ${formatMoney(minimumPrice)}${minimumApplies ? " (applied)" : ""}`,
+      ...estimateDetails,
       `Expected service time: ${formatDuration(selectedService.durationMinutes)}`,
       "",
       `Requested date: ${formatDate(appointmentDate)}`,
@@ -428,7 +498,7 @@ export default function Home() {
             <legend>1. Choose a surface</legend>
             <div className="service-options">
               {services.map((item) => (
-                <button className={service === item.name ? "active" : ""} key={item.name} type="button" aria-pressed={service === item.name} onClick={() => { setService(item.name); setSquareFeet(""); setAppointmentTime(""); setScheduleError(""); setSubmitted(false); }}>
+                <button className={service === item.name ? "active" : ""} key={item.name} type="button" aria-pressed={service === item.name} onClick={() => chooseService(item.name, false)}>
                   <span>{item.name}</span><small>{item.title}</small>
                 </button>
               ))}
@@ -436,13 +506,27 @@ export default function Home() {
           </fieldset>
 
           <fieldset>
-            <legend>2. Enter the approximate size</legend>
+            <legend>2. Choose how you want your estimate</legend>
+            <div className="estimate-method-options">
+              <button className={estimateMethod === "measurement" ? "active" : ""} type="button" aria-pressed={estimateMethod === "measurement"} onClick={() => chooseEstimateMethod("measurement")}>
+                <span>Enter square feet</span>
+                <small>See an instant estimate</small>
+              </button>
+              <button className={estimateMethod === "photos" ? "active" : ""} type="button" aria-pressed={estimateMethod === "photos"} onClick={() => chooseEstimateMethod("photos")}>
+                <span>Use photos instead</span>
+                <small>Request a rough estimate</small>
+              </button>
+            </div>
+          </fieldset>
+
+          <fieldset hidden={estimateMethod !== "measurement"}>
+            <legend>3. Enter the approximate size</legend>
             <div className="measurement-grid">
               <label htmlFor="square-feet">
                 {selectedService.measurementLabel} in square feet
                 <input
                   id="square-feet"
-                  required
+                  required={estimateMethod === "measurement"}
                   name="squareFeet"
                   type="number"
                   inputMode="numeric"
@@ -464,8 +548,50 @@ export default function Home() {
             <p className="field-help" id="measurement-help">{selectedService.measurementHelp}</p>
           </fieldset>
 
-          <div className={`estimate-card${estimatedPrice === null ? " waiting" : ""}`} aria-live="polite">
-            {estimatedPrice === null ? (
+          <fieldset className="photo-fields" hidden={estimateMethod !== "photos"}>
+            <legend>3. Add project photos</legend>
+            <p className="photo-guidance">Photos help Pacific Pure Wash review the surface, condition, and access, but they cannot reliably show square footage or scale. We will review the photos before providing a rough estimate.</p>
+            {service === "Roofing" && <p className="roof-safety-note">Take roof photos safely from the ground. Never climb onto the roof.</p>}
+            <div className="photo-upload-grid">
+              <label className="photo-upload-control">
+                <span>Take a photo</span>
+                <small>Use your phone camera</small>
+                <input type="file" accept="image/*" capture="environment" aria-label="Take a project photo" onChange={(event) => { addPhotos(event.currentTarget.files); event.currentTarget.value = ""; }} />
+              </label>
+              <label className="photo-upload-control">
+                <span>Choose from phone</span>
+                <small>Add up to {maximumPhotoCount} photos</small>
+                <input type="file" accept="image/*" multiple aria-label="Choose project photos from your phone" onChange={(event) => { addPhotos(event.currentTarget.files); event.currentTarget.value = ""; }} />
+              </label>
+            </div>
+            {photos.length > 0 && (
+              <div className="photo-preview-grid" aria-label="Selected project photos">
+                {photos.map((photo, index) => (
+                  <figure key={`${photo.name}-${photo.lastModified}-${index}`}>
+                    <img src={photoPreviewUrls[index]} alt={`Selected ${service.toLowerCase()} project photo ${index + 1}`} />
+                    <figcaption>{photo.name}</figcaption>
+                    <button type="button" onClick={() => removePhoto(index)} aria-label={`Remove ${photo.name}`}>Remove</button>
+                  </figure>
+                ))}
+              </div>
+            )}
+            {photoError && <p className="form-error" role="alert">{photoError}</p>}
+            <div className="rate-summary photo-rate-summary" aria-label={`${service} published pricing`}>
+              <span>{formatRate(selectedService.rate)} / sq. ft.</span>
+              <span>{formatMoney(minimumPrice)} minimum</span>
+            </div>
+            <p className="photo-attachment-note">The website cannot attach photos to the prepared email automatically. When your email opens, attach the same photos before sending.</p>
+          </fieldset>
+
+          <div className={`estimate-card${estimateMethod === "photos" ? " photo-review" : estimatedPrice === null ? " waiting" : ""}`} aria-live="polite">
+            {estimateMethod === "photos" ? (
+              <>
+                <span>Photo-assisted rough estimate</span>
+                <strong>Photo review needed</strong>
+                <p>No price is calculated from images alone. We’ll review your photos and project details to prepare a rough estimate.</p>
+                <small>Published rate: {formatRate(selectedService.rate)} per sq. ft. · {formatMoney(minimumPrice)} minimum. Final pricing remains subject to confirmation.</small>
+              </>
+            ) : estimatedPrice === null ? (
               <>
                 <span>Your estimate will appear here</span>
                 <p>Enter the approximate square footage above.</p>
@@ -484,8 +610,8 @@ export default function Home() {
           </div>
 
           <fieldset className="schedule-fields">
-            <legend>3. Choose a preferred appointment</legend>
-            <p className="schedule-summary" id="schedule-summary">{service} service time: <strong>{formatDuration(selectedService.durationMinutes)}</strong>. Available start times automatically keep the full visit within working hours.</p>
+            <legend>4. Choose a preferred appointment</legend>
+            <p className="schedule-summary" id="schedule-summary">{service} service time: <strong>{formatDuration(selectedService.durationMinutes)}</strong>. Available start times automatically keep the full visit within working hours.{estimateMethod === "photos" ? " Your requested time remains pending photo review and availability confirmation." : ""}</p>
             <div className="form-grid">
               <label htmlFor="appointment-date">Preferred date
                 <input id="appointment-date" required name="appointmentDate" type="date" min={minimumDate} value={appointmentDate} aria-invalid={Boolean(scheduleError)} aria-describedby={`schedule-summary schedule-help${scheduleError ? " schedule-error" : ""}`} onChange={(event) => updateAppointmentDate(event.target.value)} />
@@ -502,7 +628,7 @@ export default function Home() {
           </fieldset>
 
           <fieldset className="contact-fields">
-            <legend>4. Tell us where to go and how to reach you</legend>
+            <legend>5. Tell us where to go and how to reach you</legend>
             <div className="form-grid">
             <label>Full name<input required name="name" autoComplete="name" placeholder="Your name" /></label>
             <label>Phone number<input required name="phone" type="tel" autoComplete="tel" placeholder="(555) 000-0000" /></label>
@@ -514,8 +640,8 @@ export default function Home() {
             <label className="full">Tell us a little about the project<textarea name="details" rows={3} placeholder={`Approximate size, condition, or anything we should know about your ${service.toLowerCase()}…`} /></label>
             </div>
           </fieldset>
-          <button className="button button-mint submit-button" type="submit">Send estimate & request time <span>→</span></button>
-          {submitted && <p className="success" role="status">Your estimate and appointment request are ready. Please send the prepared email to complete your request.</p>}
+          <button className="button button-mint submit-button" type="submit">{estimateMethod === "photos" ? "Open email & attach photos" : "Send estimate & request time"} <span>→</span></button>
+          {submitted && <p className="success" role="status">{estimateMethod === "photos" ? "Your email is ready. Attach the same selected photos before sending it to Pacific Pure Wash." : "Your estimate and appointment request are ready. Please send the prepared email to complete your request."}</p>}
         </form>
       </section>
 
