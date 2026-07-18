@@ -5,7 +5,7 @@ import "./globals.css";
 const geist = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 
 const title = "Jackson County Pressure Washing | Pacific Pure Wash";
-const description = "Driveway pressure washing, siding softwashing, and roof cleaning across Jackson County, Oregon, including 97501 and 97530. Get an instant estimate.";
+const description = "Driveway pressure washing, siding softwashing, and roof cleaning across Jackson County, Oregon, including all of Ashland, Rogue River, 97501, and 97530. Get an instant estimate.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://pacificpurewash.com"),
