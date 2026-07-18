@@ -8,6 +8,7 @@ import {
   absoluteUrl,
   breadcrumbSchema,
 } from "../../_lib/local-seo";
+import { MINIMUM_PRICE, QUOTE_PRICING } from "../../_lib/pricing";
 
 const path = SERVICE_ROUTES.Roofing;
 const title = "Roof Cleaning in Jackson County, Oregon | Pacific Pure Wash";
@@ -57,8 +58,8 @@ export default function RoofCleaningPage() {
       quoteService="roofing"
       schema={schema}
       facts={[
-        { label: "Published rate", value: "$0.30 per square foot" },
-        { label: "Minimum", value: "$175 per service" },
+        { label: "Published rate", value: QUOTE_PRICING.Roofing.displayRate },
+        { label: "Minimum", value: `$${MINIMUM_PRICE} per service` },
         { label: "Estimated time", value: "About 3½ hours" },
         { label: "Service area", value: "Jackson County, Oregon" },
       ]}
@@ -75,7 +76,7 @@ export default function RoofCleaningPage() {
           eyebrow: "Clear pricing",
           title: "Use a safe existing roof-area estimate",
           paragraphs: [
-            "Enter an approximate roof area from a previous property or roofing measurement. Never climb onto a roof to measure it. The estimator applies the published rate of $0.30 per square foot and a $175 minimum charge.",
+            `Enter an approximate roof area from a previous property or roofing measurement. Never climb onto a roof to measure it. The estimator applies the published rate of ${QUOTE_PRICING.Roofing.displayRate} and a $${MINIMUM_PRICE} minimum charge.`,
             "The result is an estimate, not a final or binding quote. Final pricing can change after the size, surface, condition, and access are reviewed.",
           ],
         },
