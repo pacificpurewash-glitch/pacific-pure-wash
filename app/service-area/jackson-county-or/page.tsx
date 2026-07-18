@@ -12,7 +12,7 @@ import { MINIMUM_PRICE, QUOTE_PRICING } from "../../_lib/pricing";
 
 const path = COUNTY_ROUTE;
 const title = "Pressure Washing Across Jackson County, OR | Pacific Pure Wash";
-const description = "Pacific Pure Wash provides driveway pressure washing, siding softwashing, and roof cleaning throughout Jackson County, including 97501 and 97530.";
+const description = "Pacific Pure Wash provides driveway pressure washing, siding softwashing, and roof cleaning throughout Jackson County, including all of Ashland, Rogue River, 97501, and 97530.";
 
 export const metadata: Metadata = {
   title,
@@ -59,22 +59,22 @@ export default function JacksonCountyServiceAreaPage() {
     <SeoLandingPage
       eyebrow="Local service area · Southern Oregon"
       title="Exterior cleaning throughout Jackson County, Oregon"
-      intro="Pacific Pure Wash serves residential and commercial properties throughout Jackson County, including Medford ZIP 97501 and Jacksonville ZIP 97530. Choose driveway pressure washing, siding softwashing, or roof cleaning and get an instant estimate."
+      intro="Pacific Pure Wash serves residential and commercial properties throughout Jackson County, including all of Ashland, Rogue River, Medford ZIP 97501, and Jacksonville ZIP 97530. Choose driveway pressure washing, siding softwashing, or roof cleaning and get an estimate."
       currentLabel="Jackson County service area"
       schema={schema}
       facts={[
         { label: "County", value: "Jackson County, Oregon" },
-        { label: "Included ZIPs", value: "97501 and 97530" },
+        { label: "Highlighted areas", value: "All Ashland · Rogue River · 97501 · 97530" },
         { label: "Services", value: "Driveways, siding, and roofing" },
         { label: "Requests", value: "Mon–Thu · 7:00 AM–4:00 PM PT" },
       ]}
       sections={[
         {
           eyebrow: "Local coverage",
-          title: "Serving properties across Jackson County",
+          title: "Serving Ashland, Rogue River, and communities across Jackson County",
           paragraphs: [
-            "Pacific Pure Wash is a small, local, eco-friendly exterior-cleaning business serving Jackson County, Oregon. ZIP codes 97501 in Medford and 97530 in Jacksonville are specifically included in the service area.",
-            "Properties elsewhere in Jackson County can use the same instant estimator and appointment-request form. Enter the property ZIP code so Pacific Pure Wash can confirm the project details and availability.",
+            "Pacific Pure Wash is a small, local, eco-friendly exterior-cleaning business serving Jackson County, Oregon. Coverage includes all of Ashland, Rogue River, Medford ZIP 97501, and Jacksonville ZIP 97530.",
+            "Properties elsewhere in Jackson County can use the same estimator and appointment-request form. Enter the property ZIP code so Pacific Pure Wash can confirm the project details and availability.",
           ],
         },
         {
@@ -96,12 +96,16 @@ export default function JacksonCountyServiceAreaPage() {
       ]}
       faqs={[
         {
-          question: "Does Pacific Pure Wash serve ZIP code 97501?",
-          answer: "Yes. ZIP code 97501 in Medford is included in the Pacific Pure Wash Jackson County service area.",
+          question: "Do you serve all of Ashland, Oregon?",
+          answer: "Yes. Pacific Pure Wash provides driveway pressure washing, siding softwashing, and roof cleaning throughout Ashland, Oregon.",
         },
         {
-          question: "Does Pacific Pure Wash serve ZIP code 97530?",
-          answer: "Yes. ZIP code 97530 in Jacksonville is included in the Pacific Pure Wash Jackson County service area.",
+          question: "Do you serve Rogue River, Oregon?",
+          answer: "Yes. Rogue River, Oregon is included in the Pacific Pure Wash Jackson County service area.",
+        },
+        {
+          question: "Are Medford ZIP 97501 and Jacksonville ZIP 97530 included?",
+          answer: "Yes. Medford ZIP 97501 and Jacksonville ZIP 97530 are both included in the service area.",
         },
         {
           question: "Do you serve other locations in Jackson County?",
