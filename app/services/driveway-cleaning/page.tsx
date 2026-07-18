@@ -12,7 +12,7 @@ import { MINIMUM_PRICE, QUOTE_PRICING } from "../../_lib/pricing";
 
 const path = SERVICE_ROUTES.Driveway;
 const title = "Driveway Pressure Washing in Jackson County | Pacific Pure Wash";
-const description = "Driveway pressure washing across Jackson County, Oregon, including 97501 and 97530. See pricing, calculate an estimate, and request service.";
+const description = "Driveway pressure washing across Jackson County, Oregon, including all of Ashland, Rogue River, 97501, and 97530. See pricing and request service.";
 
 export const metadata: Metadata = {
   title,
@@ -42,7 +42,7 @@ const schema = {
       url: absoluteUrl(path),
       provider: { "@id": BUSINESS_ID },
       areaServed: AREA_SERVED_SCHEMA,
-      description: "Concrete and asphalt driveway pressure washing throughout Jackson County, Oregon, including ZIP codes 97501 and 97530.",
+      description: "Concrete and asphalt driveway pressure washing throughout Jackson County, Oregon, including all of Ashland, Rogue River, and ZIP codes 97501 and 97530.",
     },
     breadcrumbSchema("Driveway Pressure Washing", path),
   ],
@@ -53,7 +53,7 @@ export default function DrivewayCleaningPage() {
     <SeoLandingPage
       eyebrow="Driveway cleaning · Jackson County"
       title="Driveway pressure washing in Jackson County, Oregon"
-      intro="Pacific Pure Wash uses controlled pressure washing for concrete or asphalt driveways throughout Jackson County, including Medford ZIP 97501 and Jacksonville ZIP 97530. Get a clear instant estimate before requesting a preferred appointment."
+      intro="Pacific Pure Wash uses controlled pressure washing for concrete or asphalt driveways throughout Jackson County, including all of Ashland, Rogue River, Medford ZIP 97501, and Jacksonville ZIP 97530. Get a clear instant estimate before requesting a preferred appointment."
       currentLabel="Driveway pressure washing"
       quoteService="driveway"
       schema={schema}
@@ -91,8 +91,8 @@ export default function DrivewayCleaningPage() {
       ]}
       faqs={[
         {
-          question: "Do you provide driveway power washing in ZIP codes 97501 and 97530?",
-          answer: "Yes. Pacific Pure Wash serves properties throughout Jackson County, including Medford ZIP 97501 and Jacksonville ZIP 97530.",
+          question: "Where do you provide driveway pressure washing?",
+          answer: "Pacific Pure Wash serves properties throughout Jackson County, including all of Ashland, Rogue River, Medford ZIP 97501, and Jacksonville ZIP 97530.",
         },
         {
           question: "How do I estimate my driveway square footage?",
