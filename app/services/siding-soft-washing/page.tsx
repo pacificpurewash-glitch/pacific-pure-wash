@@ -8,6 +8,7 @@ import {
   absoluteUrl,
   breadcrumbSchema,
 } from "../../_lib/local-seo";
+import { MINIMUM_PRICE, QUOTE_PRICING } from "../../_lib/pricing";
 
 const path = SERVICE_ROUTES.Siding;
 const title = "Siding Softwashing in Jackson County | Pacific Pure Wash";
@@ -57,8 +58,8 @@ export default function SidingSoftWashingPage() {
       quoteService="siding"
       schema={schema}
       facts={[
-        { label: "Published rate", value: "$0.30 per square foot" },
-        { label: "Minimum", value: "$175 per service" },
+        { label: "Published rate", value: QUOTE_PRICING.Siding.displayRate },
+        { label: "Minimum", value: `$${MINIMUM_PRICE} per service` },
         { label: "Estimated time", value: "About 2½ hours" },
         { label: "Service area", value: "Jackson County, Oregon" },
       ]}
@@ -75,7 +76,7 @@ export default function SidingSoftWashingPage() {
           eyebrow: "Clear pricing",
           title: "Estimate your siding or exterior wall area",
           paragraphs: [
-            "Use your best estimate of the exterior wall area that needs washing. The estimator applies the published rate of $0.30 per square foot and a $175 minimum charge.",
+            `Use your best estimate of the exterior wall area that needs washing. The estimator applies the published rate of ${QUOTE_PRICING.Siding.displayRate} and a $${MINIMUM_PRICE} minimum charge.`,
             "The online result is an estimate, not a final or binding quote. Pacific Pure Wash confirms the property size, surface, condition, and access before final pricing.",
           ],
         },
