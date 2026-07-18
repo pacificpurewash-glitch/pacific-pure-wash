@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 async function render(pathname = "/") {
@@ -82,4 +83,36 @@ test("sitemap includes the home, service, and county URLs", async () => {
   assert.match(xml, /services\/siding-soft-washing/);
   assert.match(xml, /services\/roof-cleaning/);
   assert.match(xml, /service-area\/jackson-county-or/);
+});
+
+test("published quote rates stay consistent across service pages", async () => {
+  const driveway = await (await render("/services/driveway-cleaning")).text();
+  const siding = await (await render("/services/siding-soft-washing")).text();
+  const roofing = await (await render("/services/roof-cleaning")).text();
+  const serviceArea = await (await render("/service-area/jackson-county-or")).text();
+
+  assert.match(driveway, /\$0\.45 per square foot/);
+  assert.match(driveway, /concrete or asphalt/i);
+  assert.match(siding, /\$0\.30 per square foot/);
+  assert.match(roofing, /\$0\.65 per square foot/);
+  assert.match(serviceArea, /roof cleaning is \$0\.65 per square foot/i);
+  assert.match(driveway, /\$175 per service/);
+  assert.match(siding, /\$175 per service/);
+  assert.match(roofing, /\$175 per service/);
+  assert.doesNotMatch(roofing, /\$0\.30 per square foot/);
+});
+
+test("home offers an honest mobile photo-estimate path", async () => {
+  const response = await render("/");
+  const html = await response.text();
+  const source = await readFile(new URL("../app/page.tsx", import.meta.url), "utf8");
+
+  assert.match(html, /Enter square feet/);
+  assert.match(html, /Use photos instead/);
+  assert.match(html, /Take a photo/);
+  assert.match(html, /capture=["']environment["']/i);
+  assert.match(html, /cannot reliably show square footage or scale/i);
+  assert.match(html, /cannot attach photos[^<]*automatically/i);
+  assert.match(source, /No price was calculated from images alone/);
+  assert.doesNotMatch(source, /readAsDataURL|data:image|base64/i);
 });
