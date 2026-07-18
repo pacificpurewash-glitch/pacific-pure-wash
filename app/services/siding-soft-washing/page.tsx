@@ -12,7 +12,7 @@ import { MINIMUM_PRICE, QUOTE_PRICING } from "../../_lib/pricing";
 
 const path = SERVICE_ROUTES.Siding;
 const title = "Siding Softwashing in Jackson County | Pacific Pure Wash";
-const description = "House and siding softwashing across Jackson County, Oregon, including 97501 and 97530. View pricing, estimate your project, and request service.";
+const description = "House and siding softwashing across Jackson County, Oregon, including all of Ashland, Rogue River, 97501, and 97530. View pricing and request service.";
 
 export const metadata: Metadata = {
   title,
@@ -42,7 +42,7 @@ const schema = {
       url: absoluteUrl(path),
       provider: { "@id": BUSINESS_ID },
       areaServed: AREA_SERVED_SCHEMA,
-      description: "House and siding softwashing throughout Jackson County, Oregon, including ZIP codes 97501 and 97530.",
+      description: "House and siding softwashing throughout Jackson County, Oregon, including all of Ashland, Rogue River, and ZIP codes 97501 and 97530.",
     },
     breadcrumbSchema("Siding Softwashing", path),
   ],
@@ -53,7 +53,7 @@ export default function SidingSoftWashingPage() {
     <SeoLandingPage
       eyebrow="Siding cleaning · Jackson County"
       title="Siding and exterior softwashing in Jackson County, Oregon"
-      intro="Pacific Pure Wash provides lower-pressure exterior cleaning for siding, stucco, and painted surfaces throughout Jackson County, including Medford ZIP 97501 and Jacksonville ZIP 97530."
+      intro="Pacific Pure Wash provides lower-pressure exterior cleaning for siding, stucco, and painted surfaces throughout Jackson County, including all of Ashland, Rogue River, Medford ZIP 97501, and Jacksonville ZIP 97530."
       currentLabel="Siding softwashing"
       quoteService="siding"
       schema={schema}
@@ -95,8 +95,8 @@ export default function SidingSoftWashingPage() {
           answer: "No. Driveways use controlled pressure washing, while siding receives a lower-pressure soft wash suited to more delicate exterior surfaces.",
         },
         {
-          question: "Which ZIP codes do you serve for house washing?",
-          answer: "Pacific Pure Wash serves properties throughout Jackson County, including Medford ZIP 97501 and Jacksonville ZIP 97530.",
+          question: "Where do you provide house and siding washing?",
+          answer: "Pacific Pure Wash serves properties throughout Jackson County, including all of Ashland, Rogue River, Medford ZIP 97501, and Jacksonville ZIP 97530.",
         },
         {
           question: "How long does a siding appointment take?",
