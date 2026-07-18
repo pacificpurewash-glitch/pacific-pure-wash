@@ -12,7 +12,7 @@ import { MINIMUM_PRICE, QUOTE_PRICING } from "../../_lib/pricing";
 
 const path = SERVICE_ROUTES.Roofing;
 const title = "Roof Cleaning in Jackson County, Oregon | Pacific Pure Wash";
-const description = "Roof cleaning and softwashing across Jackson County, Oregon, including 97501 and 97530. See pricing, calculate an estimate, and request service.";
+const description = "Roof cleaning and softwashing across Jackson County, Oregon, including all of Ashland, Rogue River, 97501, and 97530. See pricing and request service.";
 
 export const metadata: Metadata = {
   title,
@@ -42,7 +42,7 @@ const schema = {
       url: absoluteUrl(path),
       provider: { "@id": BUSINESS_ID },
       areaServed: AREA_SERVED_SCHEMA,
-      description: "Roof cleaning and softwashing throughout Jackson County, Oregon, including ZIP codes 97501 and 97530.",
+      description: "Roof cleaning and softwashing throughout Jackson County, Oregon, including all of Ashland, Rogue River, and ZIP codes 97501 and 97530.",
     },
     breadcrumbSchema("Roof Cleaning", path),
   ],
@@ -53,7 +53,7 @@ export default function RoofCleaningPage() {
     <SeoLandingPage
       eyebrow="Roof cleaning · Jackson County"
       title="Roof cleaning and softwashing in Jackson County, Oregon"
-      intro="Pacific Pure Wash uses a lower-pressure soft wash to target dark streaks and organic growth on roofing throughout Jackson County, including Medford ZIP 97501 and Jacksonville ZIP 97530."
+      intro="Pacific Pure Wash uses a lower-pressure soft wash to target dark streaks and organic growth on roofing throughout Jackson County, including all of Ashland, Rogue River, Medford ZIP 97501, and Jacksonville ZIP 97530."
       currentLabel="Roof cleaning"
       quoteService="roofing"
       schema={schema}
@@ -91,8 +91,8 @@ export default function RoofCleaningPage() {
       ]}
       faqs={[
         {
-          question: "Do you offer roof cleaning in ZIP codes 97501 and 97530?",
-          answer: "Yes. Pacific Pure Wash serves properties throughout Jackson County, including Medford ZIP 97501 and Jacksonville ZIP 97530.",
+          question: "Where do you provide roof cleaning?",
+          answer: "Pacific Pure Wash serves properties throughout Jackson County, including all of Ashland, Rogue River, Medford ZIP 97501, and Jacksonville ZIP 97530.",
         },
         {
           question: "Should I climb onto my roof to measure it?",
