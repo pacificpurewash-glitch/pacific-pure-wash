@@ -1,5 +1,8 @@
 export const SITE_URL = "https://pacificpurewash.com";
 export const BUSINESS_ID = `${SITE_URL}/#business`;
+export const PHONE_DISPLAY = "541-690-8385";
+export const PHONE_E164 = "+15416908385";
+export const PHONE_HREF = `tel:${PHONE_E164}`;
 
 export const AREA_SERVED_SCHEMA = [
   {
@@ -25,6 +28,26 @@ export const AREA_SERVED_SCHEMA = [
       addressLocality: "Jacksonville",
       addressRegion: "OR",
       postalCode: "97530",
+      addressCountry: "US",
+    },
+  },
+  {
+    "@type": "Place",
+    name: "Ashland, Oregon",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Ashland",
+      addressRegion: "OR",
+      addressCountry: "US",
+    },
+  },
+  {
+    "@type": "Place",
+    name: "Rogue River, Oregon",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Rogue River",
+      addressRegion: "OR",
       addressCountry: "US",
     },
   },
