@@ -1,3 +1,5 @@
+import { PHONE_DISPLAY, PHONE_HREF } from "../_lib/local-seo";
+
 type Fact = {
   label: string;
   value: string;
@@ -168,7 +170,10 @@ export default function SeoLandingPage({
             <img className="brand-logo" src="/pacific-pure-wash-logo.jpg" alt="" width="70" height="70" loading="lazy" decoding="async" />
             <span className="brand-copy"><strong>Pacific Pure Wash</strong><small>Pressure washing &amp; softwashing</small></span>
           </a>
-          <a className="footer-email" href="mailto:pacificpurewash@gmail.com">pacificpurewash@gmail.com</a>
+          <div className="footer-contact" aria-label="Contact Pacific Pure Wash">
+            <a className="footer-email" href="mailto:pacificpurewash@gmail.com">pacificpurewash@gmail.com</a>
+            <a className="footer-phone" href={PHONE_HREF}>Call {PHONE_DISPLAY}</a>
+          </div>
           <a href={quoteHref}>Get an instant estimate ↑</a>
         </div>
         <nav className="shell footer-seo-links" aria-label="Services and coverage">
