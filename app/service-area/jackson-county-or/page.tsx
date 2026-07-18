@@ -8,6 +8,7 @@ import {
   absoluteUrl,
   breadcrumbSchema,
 } from "../../_lib/local-seo";
+import { MINIMUM_PRICE, QUOTE_PRICING } from "../../_lib/pricing";
 
 const path = COUNTY_ROUTE;
 const title = "Pressure Washing Across Jackson County, OR | Pacific Pure Wash";
@@ -80,7 +81,7 @@ export default function JacksonCountyServiceAreaPage() {
           eyebrow: "Three exterior services",
           title: "Pressure washing where strength fits, softwashing where care matters",
           paragraphs: [
-            "Driveways receive controlled pressure washing for durable hard surfaces. Siding, stucco, painted exteriors, and roofing receive a gentler soft wash matched to those surfaces.",
+            "Concrete or asphalt driveways receive controlled pressure washing. Siding, stucco, painted exteriors, and roofing receive a gentler soft wash matched to those surfaces.",
             "This clear distinction helps people searching for power washing, pressure washing, house washing, exterior cleaning, or roof cleaning find the service that actually fits their project.",
           ],
         },
@@ -88,7 +89,7 @@ export default function JacksonCountyServiceAreaPage() {
           eyebrow: "Instant estimates",
           title: "Published rates and a straightforward request process",
           paragraphs: [
-            "Driveway cleaning is $0.45 per square foot. Siding and roof cleaning are each $0.30 per square foot. Every service has a $175 minimum charge.",
+            `Concrete or asphalt driveway cleaning is ${QUOTE_PRICING.Driveway.displayRate}. Siding cleaning is ${QUOTE_PRICING.Siding.displayRate}, and roof cleaning is ${QUOTE_PRICING.Roofing.displayRate}. Every service has a $${MINIMUM_PRICE} minimum charge.`,
             "Choose a surface, enter the approximate square footage, review the estimate, and request a preferred Monday-through-Thursday appointment. Estimates and appointment requests remain subject to property and availability confirmation.",
           ],
         },
@@ -108,9 +109,9 @@ export default function JacksonCountyServiceAreaPage() {
         },
       ]}
       relatedLinks={[
-        { href: SERVICE_ROUTES.Driveway, label: "Driveway pressure washing", description: "$0.45 per square foot with a $175 minimum." },
-        { href: SERVICE_ROUTES.Siding, label: "Siding softwashing", description: "$0.30 per square foot with a $175 minimum." },
-        { href: SERVICE_ROUTES.Roofing, label: "Roof cleaning", description: "$0.30 per square foot with a $175 minimum." },
+        { href: SERVICE_ROUTES.Driveway, label: "Driveway pressure washing", description: `${QUOTE_PRICING.Driveway.displayRate} with a $${MINIMUM_PRICE} minimum.` },
+        { href: SERVICE_ROUTES.Siding, label: "Siding softwashing", description: `${QUOTE_PRICING.Siding.displayRate} with a $${MINIMUM_PRICE} minimum.` },
+        { href: SERVICE_ROUTES.Roofing, label: "Roof cleaning", description: `${QUOTE_PRICING.Roofing.displayRate} with a $${MINIMUM_PRICE} minimum.` },
       ]}
     />
   );
