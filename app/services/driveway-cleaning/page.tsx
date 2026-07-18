@@ -8,6 +8,7 @@ import {
   absoluteUrl,
   breadcrumbSchema,
 } from "../../_lib/local-seo";
+import { MINIMUM_PRICE, QUOTE_PRICING } from "../../_lib/pricing";
 
 const path = SERVICE_ROUTES.Driveway;
 const title = "Driveway Pressure Washing in Jackson County | Pacific Pure Wash";
@@ -37,11 +38,11 @@ const schema = {
       "@id": `${absoluteUrl(path)}#service`,
       name: "Driveway Pressure Washing",
       alternateName: "Driveway Power Washing",
-      serviceType: "Controlled pressure washing for driveways",
+      serviceType: "Controlled pressure washing for concrete or asphalt driveways",
       url: absoluteUrl(path),
       provider: { "@id": BUSINESS_ID },
       areaServed: AREA_SERVED_SCHEMA,
-      description: "Driveway pressure washing throughout Jackson County, Oregon, including ZIP codes 97501 and 97530.",
+      description: "Concrete and asphalt driveway pressure washing throughout Jackson County, Oregon, including ZIP codes 97501 and 97530.",
     },
     breadcrumbSchema("Driveway Pressure Washing", path),
   ],
@@ -52,13 +53,13 @@ export default function DrivewayCleaningPage() {
     <SeoLandingPage
       eyebrow="Driveway cleaning · Jackson County"
       title="Driveway pressure washing in Jackson County, Oregon"
-      intro="Pacific Pure Wash uses controlled pressure washing for durable driveway surfaces throughout Jackson County, including Medford ZIP 97501 and Jacksonville ZIP 97530. Get a clear instant estimate before requesting a preferred appointment."
+      intro="Pacific Pure Wash uses controlled pressure washing for concrete or asphalt driveways throughout Jackson County, including Medford ZIP 97501 and Jacksonville ZIP 97530. Get a clear instant estimate before requesting a preferred appointment."
       currentLabel="Driveway pressure washing"
       quoteService="driveway"
       schema={schema}
       facts={[
-        { label: "Published rate", value: "$0.45 per square foot" },
-        { label: "Minimum", value: "$175 per service" },
+        { label: "Published rate", value: QUOTE_PRICING.Driveway.displayRate },
+        { label: "Minimum", value: `$${MINIMUM_PRICE} per service` },
         { label: "Estimated time", value: "About 1½ hours" },
         { label: "Service area", value: "Jackson County, Oregon" },
       ]}
@@ -67,7 +68,7 @@ export default function DrivewayCleaningPage() {
           eyebrow: "Surface-matched care",
           title: "Controlled pressure for durable driveway surfaces",
           paragraphs: [
-            "Driveway cleaning is the pressure-washing service in the Pacific Pure Wash lineup. It is intended for durable hard surfaces where controlled water pressure can lift algae, tire marks, and weather stains.",
+            "Driveway cleaning is the pressure-washing service in the Pacific Pure Wash lineup. It is available for concrete or asphalt driveways, using controlled water pressure for exterior hardscape cleaning.",
             "People often call this power washing, pressure washing, or exterior hardscape cleaning. Whatever wording brought you here, the goal is the same: a brighter, cleaner-looking approach to your home or business.",
           ],
         },
@@ -75,7 +76,7 @@ export default function DrivewayCleaningPage() {
           eyebrow: "Clear pricing",
           title: "How the driveway estimate is calculated",
           paragraphs: [
-            "Enter the approximate driveway length multiplied by its average width. The estimator applies the published rate of $0.45 per square foot and a $175 minimum charge.",
+            `Enter the approximate driveway length multiplied by its average width. The estimator applies the published rate of ${QUOTE_PRICING.Driveway.displayRate} and a $${MINIMUM_PRICE} minimum charge.`,
             "The result is an estimate based on the measurement you provide, not a final or binding quote. Final pricing can change after the size, surface, condition, and access are confirmed.",
           ],
         },
