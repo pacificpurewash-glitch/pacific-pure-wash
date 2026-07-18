@@ -4,6 +4,9 @@ import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
   AREA_SERVED_SCHEMA,
   COUNTY_ROUTE,
+  PHONE_DISPLAY,
+  PHONE_E164,
+  PHONE_HREF,
   SERVICE_ROUTES,
   absoluteUrl,
 } from "./_lib/local-seo";
@@ -142,14 +145,16 @@ const structuredData = {
       name: "Pacific Pure Wash",
       url: "https://pacificpurewash.com/",
       email: "pacificpurewash@gmail.com",
+      telephone: PHONE_E164,
       logo: "https://pacificpurewash.com/pacific-pure-wash-logo.jpg",
       image: "https://pacificpurewash.com/og.jpg",
-      description: "Small, local, eco-friendly exterior cleaning business providing pressure washing, power washing, softwashing, and roof cleaning throughout Jackson County, Oregon, including ZIP codes 97501 and 97530.",
+      description: "Small, local, eco-friendly exterior cleaning business providing pressure washing, power washing, softwashing, and roof cleaning throughout Jackson County, Oregon, including all of Ashland, Rogue River, and ZIP codes 97501 and 97530.",
       areaServed: AREA_SERVED_SCHEMA,
       contactPoint: {
         "@type": "ContactPoint",
         contactType: "customer service",
         email: "pacificpurewash@gmail.com",
+        telephone: PHONE_E164,
       },
       makesOffer: [
         { "@type": "Offer", itemOffered: { "@id": `${absoluteUrl(SERVICE_ROUTES.Driveway)}#service` } },
@@ -387,7 +392,7 @@ export default function Home() {
           <p className="eyebrow">Go green. Shine brighter.</p>
           <h1>Pressure washing<br /><em>across Jackson County.</em></h1>
           <p className="hero-intro">
-            <strong>Powerful clean. Purely better.</strong> Pacific Pure Wash provides driveway pressure washing, siding softwashing, and roof cleaning throughout Jackson County, Oregon—including 97501 and 97530.
+            <strong>Powerful clean. Purely better.</strong> Pacific Pure Wash provides driveway pressure washing, siding softwashing, and roof cleaning throughout Jackson County, Oregon—including all of Ashland, Rogue River, 97501, and 97530.
           </p>
           <div className="hero-actions">
             <a className="button button-dark" href="#quote">Get my instant estimate <span>→</span></a>
@@ -447,7 +452,7 @@ export default function Home() {
           <h2 id="service-area-title">Exterior cleaning throughout Jackson County.</h2>
         </div>
         <div>
-          <p>Pacific Pure Wash serves residential and commercial properties throughout Jackson County, Oregon, including Medford ZIP 97501 and Jacksonville ZIP 97530. Enter your property ZIP code in the quote form and we’ll confirm the project details and availability.</p>
+          <p>Pacific Pure Wash serves residential and commercial properties throughout Jackson County, Oregon, including all of Ashland, Rogue River, Medford ZIP 97501, and Jacksonville ZIP 97530. Enter your property ZIP code in the quote form and we’ll confirm the project details and availability.</p>
           <div className="service-area-links">
             <a className="text-link" href={COUNTY_ROUTE}>Explore our Jackson County service area →</a>
             <a className="text-link" href="#quote">Get an estimate →</a>
@@ -480,7 +485,7 @@ export default function Home() {
           <details><summary>What is the difference between pressure washing and softwashing?</summary><p>Pressure washing uses controlled water pressure for durable hard surfaces such as driveways. Softwashing uses lower pressure for surfaces that need gentler care, including siding and roofing.</p></details>
           <details><summary>Do you offer power washing or pressure washing?</summary><p>People often use both terms for hard-surface exterior cleaning. Pacific Pure Wash provides controlled pressure washing for durable driveways and uses lower-pressure softwashing for siding and roofing.</p></details>
           <details><summary>How does the instant estimate work?</summary><p>Choose driveway, siding, or roofing and enter the approximate square footage. The calculator uses the published service rate and a $175 minimum charge. The result is an estimate, not a final or binding quote.</p></details>
-          <details><summary>Where do you provide exterior cleaning?</summary><p>Pacific Pure Wash serves residential and commercial properties throughout Jackson County, Oregon, including Medford ZIP 97501 and Jacksonville ZIP 97530.</p></details>
+          <details><summary>Where do you provide exterior cleaning?</summary><p>Pacific Pure Wash serves residential and commercial properties throughout Jackson County, Oregon, including all of Ashland, Rogue River, Medford ZIP 97501, and Jacksonville ZIP 97530.</p></details>
           <details><summary>When are appointments available?</summary><p>Appointment requests are available Monday through Thursday from 7:00 AM to 4:00 PM Pacific Time. The form only shows start times that allow the selected service to finish by 4:00 PM.</p></details>
           <details><summary>How long does each service take?</summary><p>A driveway appointment is estimated at 1½ hours, siding at 2½ hours, and roofing at 3½ hours. Actual time can change after the property and conditions are reviewed.</p></details>
         </div>
@@ -648,7 +653,10 @@ export default function Home() {
       <footer>
         <div className="shell footer-grid">
           <a className="brand footer-brand" href="#top"><img className="brand-logo" src="/pacific-pure-wash-logo.jpg" alt="" width="70" height="70" loading="lazy" decoding="async" /><span className="brand-copy"><strong>Pacific Pure Wash</strong><small>Pressure washing & softwashing</small></span></a>
-          <a className="footer-email" href="mailto:pacificpurewash@gmail.com">pacificpurewash@gmail.com</a>
+          <div className="footer-contact" aria-label="Contact Pacific Pure Wash">
+            <a className="footer-email" href="mailto:pacificpurewash@gmail.com">pacificpurewash@gmail.com</a>
+            <a className="footer-phone" href={PHONE_HREF}>Call {PHONE_DISPLAY}</a>
+          </div>
           <a href="#quote">Get an instant estimate ↑</a>
         </div>
         <nav className="shell footer-seo-links" aria-label="Services and coverage">
